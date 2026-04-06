@@ -1,0 +1,230 @@
+:root {
+    --primary-gradient: linear-gradient(135deg, #339933 0%, #006699 100%);
+    --secondary-gradient: linear-gradient(135deg, #3B9A54 0%, #184424 100%);
+    --card-bg: #FFFFFF;
+    --card-border: rgba(0, 0, 0, 0.05);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --dark-text: #1D2A34;
+    --muted-text: #666666;
+    --accent: #339933;
+    --light-bg: #F8FAFC;
+}
+
+body {
+    font-family: 'Inter', 'Outfit', sans-serif;
+    background-color: #EDEDED;
+    background-image: 
+        linear-gradient(180deg, #FFFFFF 0%, #F0F4F2 40%, #D8E6DE 100%);
+    background-attachment: fixed;
+    color: var(--dark-text);
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.app-container {
+    padding: 2rem 4rem;
+}
+
+/* Professional Card Style - Unified */
+.glass {
+    background: #FFFFFF;
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.dashboard-header {
+    background: var(--primary-gradient) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 2rem;
+    margin-bottom: 1.5rem;
+    border: none !important;
+}
+
+.dashboard-header .btn-outline-primary,
+.dashboard-header .btn-outline-info,
+.dashboard-header .btn-outline-secondary {
+    color: white !important;
+    border-color: rgba(255,255,255,0.3) !important;
+}
+
+.dashboard-header .btn-check:checked + .btn {
+    background-color: rgba(255,255,255,0.2) !important;
+    color: white !important;
+    border-color: white !important;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+}
+
+.logo-img {
+    max-height: 45px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s;
+}
+
+.logo-img:hover {
+    transform: scale(1.05);
+}
+
+.card-header {
+    background: #F8FAFC;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dark-text);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+#map {
+    height: 850px;
+    width: 100%;
+}
+
+.map-body { padding: 0 !important; }
+
+/* Legend - Compact & Elegant */
+.map-overlay-legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.map-overlay-legend h6 {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--muted-text);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.legend-items { display: flex; gap: 12px; }
+.legend-item { display: flex; align-items: center; font-size: 0.75rem; color: var(--dark-text); font-weight: 500; }
+.color-box { width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+
+.color-box.good { background-color: #3B9A54; }
+.color-box.moderate { background-color: #339933; }
+.color-box.unhealthy { background-color: #006699; }
+.color-box.danger { background-color: #184424; }
+
+/* Grid Items - Clean White Cards */
+.data-item {
+    background: #FFFFFF;
+    border: 1px solid #F1F5F9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    padding: 1.25rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.data-item:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.data-item i { font-size: 1.3rem; margin-bottom: 0.75rem; }
+.data-item h5 { font-size: 1.25rem; font-weight: 800; margin: 0; }
+.small-label { font-size: 0.75rem; color: var(--muted-text); font-weight: 600; text-transform: uppercase; }
+
+/* Recommendations - Professional Rows */
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.recommendation-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    border-left: 4px solid #3B9A54;
+    transition: transform 0.2s;
+}
+
+.recommendation-card:hover { background-color: #FFFFFF; }
+.recommendation-card.warning { border-left-color: #006699; }
+.recommendation-card.danger { border-left-color: #184424; }
+
+.recommendation-card strong { color: var(--dark-text); font-size: 0.9rem; }
+.recommendation-card p { color: var(--muted-text); font-size: 0.85rem; margin-top: 2px; }
+
+/* Prediction Value */
+.prediction-value {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #184424;
+    letter-spacing: -2px;
+}
+
+.status-badge-ml {
+    background: #E6F0E9;
+    color: #184424;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+/* Upload Drop Zone */
+.upload-drop-zone {
+    background: #F8FAFC;
+    border: 2px dashed #CBD5E1;
+    padding: 2.5rem;
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.upload-drop-zone:hover {
+    border-color: #3B9A54;
+    background-color: #FFFFFF;
+}
+
+.text-success { color: #3B9A54 !important; }
+.text-info { color: #006699 !important; }
+.text-warning { color: #006699 !important; }
+.text-danger { color: #184424 !important; }
+.text-muted { color: #666666 !important; }
+
+.logo-section span {
+    color: #339933;
+    font-weight: 800;
+}
+
+.text-gradient-purple {
+    color: #184424;
+    font-weight: 900;
+}
+
+.hfino-signature {
+    color: #3B9A54;
+    font-weight: 800;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    font-style: italic;
+    margin-left: 5px;
+}
