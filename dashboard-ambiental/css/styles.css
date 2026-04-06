@@ -120,8 +120,8 @@ body {
     margin: 0;
 }
 
-.legend-items { display: flex; gap: 12px; }
-.legend-item { display: flex; align-items: center; font-size: 0.75rem; color: var(--dark-text); font-weight: 500; }
+.legend-items { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.legend-item { display: flex; align-items: center; font-size: 0.75rem; color: var(--dark-text); font-weight: 500; white-space: nowrap; }
 .color-box { width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
 
 .color-box.good { background-color: #3B9A54; }
@@ -154,6 +154,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    height: 100%;
+    justify-content: space-around;
+}
+
+.card-body.d-flex-column {
+    display: flex;
+    flex-direction: column;
 }
 
 .recommendation-card {

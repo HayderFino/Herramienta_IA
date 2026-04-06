@@ -73,7 +73,7 @@ class RecommendationPanel {
 
         // Renderizado final
         this.container.innerHTML = recommendations.map(rec => `
-            <div class="recommendation-card ${rec.type} p-3 mb-3 animate-fade">
+            <div class="recommendation-card ${rec.type} p-3 animate-fade">
                 <div class="d-flex align-items-center mb-1">
                     <i class="fas ${rec.icon} me-2 text-${rec.type === 'danger' ? 'danger' : rec.type === 'warning' ? 'warning' : 'success'}"></i>
                     <strong class="small uppercase font-weight-bold">${rec.title}</strong>
