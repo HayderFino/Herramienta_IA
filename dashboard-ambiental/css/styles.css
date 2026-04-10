@@ -102,32 +102,48 @@ body {
     bottom: 20px;
     right: 20px;
     z-index: 1000;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 15px;
+    background: #FFFFFF;
     border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .map-overlay-legend h6 {
-    font-size: 0.75rem;
+    font-size: 0.95rem;
     font-weight: 800;
-    color: var(--muted-text);
-    text-transform: uppercase;
-    margin: 0;
+    color: #000;
+    margin: 0 0 10px 0;
+    font-family: 'Inter', sans-serif;
 }
 
-.legend-items { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.legend-item { display: flex; align-items: center; font-size: 0.75rem; color: var(--dark-text); font-weight: 500; white-space: nowrap; }
-.color-box { width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+.legend-items { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; width: 100%; }
+.legend-item { display: flex; align-items: center; font-size: 0.85rem; color: #000; font-weight: 400; font-family: 'Inter', sans-serif; white-space: nowrap; line-height: 1; }
+.legend-item strong { margin-right: 6px; font-weight: 900; font-size: 0.85rem; }
+.color-box { width: 40px; height: 18px; border-radius: 4px; margin-right: 10px; flex-shrink: 0; }
 
-.color-box.good { background-color: #3B9A54; }
-.color-box.moderate { background-color: #339933; }
-.color-box.unhealthy { background-color: #006699; }
-.color-box.danger { background-color: #184424; }
+.color-box.good { background-color: #4CAF50; }
+.color-box.moderate { background-color: #FFC107; }
+.color-box.unhealthy { background-color: #FF9800; }
+.color-box.danger { background-color: #EF4444; }
+
+/* Map Tooltips for Stations */
+.station-permanent-tooltip {
+    background: rgba(255, 255, 255, 0.90);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    color: #1D2A34;
+}
+.leaflet-tooltip-left.station-permanent-tooltip::before { border-left-color: rgba(255, 255, 255, 0.90); }
+.leaflet-tooltip-right.station-permanent-tooltip::before { border-right-color: rgba(255, 255, 255, 0.90); }
+.leaflet-tooltip-top.station-permanent-tooltip::before { border-top-color: rgba(255, 255, 255, 0.90); }
+.leaflet-tooltip-bottom.station-permanent-tooltip::before { border-bottom-color: rgba(255, 255, 255, 0.90); }
 
 /* Grid Items - Clean White Cards */
 .data-item {

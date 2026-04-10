@@ -17,6 +17,7 @@ python -m venv .venv
 # Activar el entorno (Windows)
 .\.venv\Scripts\activate
 
+
 # Actualizar pip
 python -m pip install --upgrade pip
 

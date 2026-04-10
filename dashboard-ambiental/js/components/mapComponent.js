@@ -105,6 +105,17 @@ class MapComponent {
                     </div>
                 `);
 
+                const displayName = station.short || station.name;
+                marker.bindTooltip(
+                    `<strong>${displayName}</strong>`,
+                    {
+                        permanent: true,
+                        direction: 'right',
+                        className: 'station-permanent-tooltip',
+                        offset: [10, 0]
+                    }
+                );
+
                 marker.addTo(this.layers[category]);
             });
         });
