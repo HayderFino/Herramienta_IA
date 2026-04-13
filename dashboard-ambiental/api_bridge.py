@@ -80,6 +80,31 @@ async def upload_file(file: UploadFile = File(...)):
         if os.path.exists(temp_path):
             os.remove(temp_path)
 
+from fastapi import Request
+import json
+
+MANUAL_DATA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "admin", "manual_data.json")
+
+@app.post("/api/manual_data")
+async def save_manual_data(request: Request):
+    try:
+        data = await request.json()
+        with open(MANUAL_DATA_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return {"success": True, "message": "Datos guardados"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@app.get("/api/manual_data")
+async def get_manual_data():
+    if os.path.exists(MANUAL_DATA_PATH):
+        try:
+            with open(MANUAL_DATA_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
 if __name__ == "__main__":
     import uvicorn
     print("🚀 Iniciando Bridge API para modelo.py...")

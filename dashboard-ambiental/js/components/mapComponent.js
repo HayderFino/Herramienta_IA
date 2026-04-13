@@ -86,6 +86,17 @@ class MapComponent {
                 this._renderCards();
             }
         });
+
+        // 7. Cargar datos persistentes del servidor Python
+        fetch('http://localhost:8000/api/manual_data?t=' + Date.now())
+            .then(r => r.json())
+            .then(data => {
+                localStorage.setItem('manualStationData', JSON.stringify(data));
+                let ev = new Event('storage');
+                ev.key = 'manualStationData';
+                window.dispatchEvent(ev);
+            })
+            .catch(e => console.warn("No se pudo cargar datos persistentes", e));
     }
 
     /** Helper para determinar color basado en el número **/

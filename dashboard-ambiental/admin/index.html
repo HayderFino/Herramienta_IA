@@ -724,6 +724,32 @@
     loadCredentials();
 
     // ─── MANUAL DATA INJECTION ────────────────────────────────────────────────
+    async function syncManualDataToServer() {
+        const data = localStorage.getItem('manualStationData') || '{}';
+        try {
+            await fetch('http://localhost:8000/api/manual_data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: data
+            });
+        } catch(e) { console.error("Error saving manual data to server:", e); }
+    }
+
+    async function loadManualDataFromServer() {
+        try {
+            const r = await fetch('http://localhost:8000/api/manual_data?t=' + Date.now());
+            if (r.ok) {
+                const data = await r.json();
+                localStorage.setItem('manualStationData', JSON.stringify(data));
+                const ev = new Event('change');
+                document.getElementById('manual-station').dispatchEvent(ev);
+            }
+        } catch(e) { console.warn("Could not load manual data from server", e); }
+    }
+
+    // Load initially
+    loadManualDataFromServer();
+
     function saveManualData() {
        const station = document.getElementById('manual-station').value;
        const rawVal = document.getElementById('manual-indicator').value.trim();
@@ -735,6 +761,7 @@
        let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
        manualData[station] = { indicator, status, timestamp: new Date().toISOString() };
        localStorage.setItem('manualStationData', JSON.stringify(manualData));
+       syncManualDataToServer();
        
        const msg = document.getElementById('manual-msg');
        msg.innerHTML = `<span class="badge bg-success" style="padding:8px"><i class="fas fa-check me-2"></i>Datos inyectados a ${station}</span>`;
@@ -746,6 +773,7 @@
        let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
        delete manualData[station];
        localStorage.setItem('manualStationData', JSON.stringify(manualData));
+       syncManualDataToServer();
        
        document.getElementById('manual-indicator').value = '';
        document.getElementById('manual-status').value = 'Estable';
