@@ -28,6 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "API Bridge running correctly"}
+
 @app.get("/api/predict")
 async def get_predictions():
     """

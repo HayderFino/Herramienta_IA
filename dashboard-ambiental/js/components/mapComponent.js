@@ -65,14 +65,87 @@ class MapComponent {
         this._buildStationLayers();
 
         // 4. Mostrar capa inicial y encuadrar
+        this.currentLayer = 'clima';
         this.layers.clima.addTo(this.map);
         this._fitToLayer('clima');
+        this._renderCards();
+        this._updateLegend('clima');
 
         // 5. Selector de estilo de mapa
         const styleSelect = document.getElementById('map-style-select');
         if (styleSelect) {
             styleSelect.addEventListener('change', (e) => this.changeStyle(e.target.value));
         }
+
+        // 6. Escuchar cambios del admin panel en tiempo real
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'manualStationData') {
+                console.log("Detectado cambio en datos manuales, regenerando marcadores...");
+                Object.values(this.layers).forEach(layer => layer.clearLayers());
+                this._buildStationLayers();
+                this._renderCards();
+            }
+        });
+    }
+
+    /** Helper para determinar color basado en el número **/
+    _getColorForValue(category, indicatorStr, fallbackColor) {
+        if (!indicatorStr) return fallbackColor;
+        const val = parseFloat(indicatorStr);
+        if (isNaN(val)) return fallbackColor;
+        
+        if (category === 'aire') {
+            if (val <= 25) return '#4CAF50';
+            if (val <= 50) return '#FFC107';
+            if (val <= 75) return '#FF9800';
+            return '#EF4444';
+        } else if (category === 'clima') {
+            if (val <= 28) return '#3B9A54';
+            if (val <= 33) return '#FFC107';
+            if (val <= 38) return '#FF9800';
+            return '#EF4444';
+        } else if (category === 'agua') {
+            if (val < 6.5) return '#EF4444'; 
+            if (val <= 8.5) return '#4CAF50'; 
+            return '#FF9800'; 
+        }
+        return fallbackColor;
+    }
+
+    /** Actualiza la leyenda del mapa superpuesta (ICA, Temperatura, pH) */
+    _updateLegend(layerName) {
+        const legend = document.getElementById('map-legend');
+        if (!legend) return;
+
+        let html = '';
+        if (layerName === 'aire') {
+            html = `
+                <h6>Índice de Calidad del Aire (ICA)</h6>
+                <div class="legend-items">
+                    <div class="legend-item"><span class="color-box" style="background-color:#4CAF50"></span> <strong>BUENO</strong> 0-25</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#FFC107"></span> <strong>MODERADO</strong> 26-50</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#FF9800"></span> <strong>DAÑINO</strong> 51-75</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#EF4444"></span> <strong>PELIGROSO</strong> >75</div>
+                </div>`;
+        } else if (layerName === 'clima') {
+            html = `
+                <h6>Escala de Temperatura (°C)</h6>
+                <div class="legend-items">
+                    <div class="legend-item"><span class="color-box" style="background-color:#3B9A54"></span> <strong>ESTABLE</strong> < 28°</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#FFC107"></span> <strong>CÁLIDO</strong> 28-33°</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#FF9800"></span> <strong>EXTREMO</strong> 34-38°</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#EF4444"></span> <strong>PELIGROSO</strong> >38°</div>
+                </div>`;
+        } else if (layerName === 'agua') {
+            html = `
+                <h6>Calidad del Agua (Nivel de pH)</h6>
+                <div class="legend-items">
+                    <div class="legend-item"><span class="color-box" style="background-color:#EF4444"></span> <strong>ÁCIDO</strong> < 6.5</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#4CAF50"></span> <strong>ÓPTIMO</strong> 6.5 - 8.5</div>
+                    <div class="legend-item"><span class="color-box" style="background-color:#FF9800"></span> <strong>ALCALINO</strong> > 8.5</div>
+                </div>`;
+        }
+        legend.innerHTML = html;
     }
 
     /** Crea los circleMarkers y los agrega al LayerGroup correspondiente */
@@ -81,14 +154,33 @@ class MapComponent {
             const style = this.categoryStyle[category];
 
             this.stations[category].forEach(station => {
+                // Read manual override if present
+                const manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+                const override = manualData[station.name] || manualData[station.short];
+                
+                let dynamicColor = style.color;
+                if (override && override.indicator) {
+                    dynamicColor = this._getColorForValue(category, override.indicator, style.color);
+                }
+
                 const marker = L.circleMarker(station.coords, {
-                    radius:      11,
-                    fillColor:   style.color,
+                    radius:      13,
+                    fillColor:   dynamicColor,
                     color:       '#FFFFFF',
                     weight:      2.5,
                     opacity:     1,
-                    fillOpacity: 0.9
+                    fillOpacity: 1
                 });
+
+                let indicatorHTML = '';
+                let statusName = 'Estacion Activa';
+                let statusColor = dynamicColor;
+                
+                if (override) {
+                    statusName = `Inyectado/Man.: ${override.status}`;
+                    indicatorHTML = `<div class="fw-bold fs-5 mt-1" style="color:${dynamicColor}">${override.indicator}</div>`;
+                    if(override.status === 'Offline') statusColor = '#6c757d';
+                }
 
                 marker.bindPopup(`
                     <div class="text-center p-2">
@@ -99,15 +191,22 @@ class MapComponent {
                         <div class="fw-bold" style="color:#1D2A34;font-size:0.9rem;">
                             ${station.name}
                         </div>
-                        <div class="mt-2 small" style="color:${style.color};">
-                            <i class="fas ${style.icon} me-1"></i> Estacion Activa
+                        ${indicatorHTML}
+                        <div class="mt-2 small" style="color:${statusColor};">
+                            <i class="fas ${style.icon} me-1"></i> ${statusName}
                         </div>
                     </div>
                 `);
 
                 const displayName = station.short || station.name;
+                let tooltipContent = `<strong>${displayName}</strong>`;
+                if (override && override.indicator) {
+                    // Muestra el valor de color resaltado, para que destaque en el mapa permanentemente
+                    tooltipContent += `<br><span style="color:${dynamicColor}; font-weight:900; font-size:1.3em; background:rgba(255,255,255,0.9); padding:1px 4px; border-radius:4px; display:inline-block; margin-top:2px;">${override.indicator}</span>`;
+                }
+
                 marker.bindTooltip(
-                    `<strong>${displayName}</strong>`,
+                    tooltipContent,
                     {
                         permanent: true,
                         direction: 'right',
@@ -180,9 +279,55 @@ class MapComponent {
         // Mostrar la capa seleccionada
         if (this.layers[layerName]) {
             this.layers[layerName].addTo(this.map);
+            this.currentLayer = layerName;
             this._fitToLayer(layerName);
+            this._renderCards();
+            this._updateLegend(layerName);
             console.log(`Layer switched to: ${layerName}`);
         }
+    }
+
+    /** Muestra tarjetas con info actual debajo del mapa */
+    _renderCards() {
+        const container = document.getElementById('station-cards-container');
+        if (!container || !this.currentLayer) return;
+
+        const list = this.stations[this.currentLayer] || [];
+        const manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+        const style = this.categoryStyle[this.currentLayer];
+
+        container.innerHTML = list.map(station => {
+            const override = manualData[station.name] || manualData[station.short];
+            let indicator = '--';
+            let status = 'Estable';
+            
+            if (override) {
+                indicator = override.indicator || '--';
+                status = override.status;
+            } else {
+                indicator = (this.currentLayer === 'aire') ? '15 µg/m³' : (this.currentLayer === 'clima' ? '28 °C' : '7.0 pH');
+            }
+
+            let statusColor = this._getColorForValue(this.currentLayer, indicator, style.color);
+            if (override && override.status === 'Offline') statusColor = '#6c757d';
+
+            return `
+                <div class="col-md-4 mb-3">
+                    <div class="card glass h-100 border-0" style="border-top: 4px solid ${statusColor} !important;">
+                        <div class="card-body p-3">
+                            <div class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:0.7rem;">${station.type}</div>
+                            <h6 class="mb-2 fw-bold" style="color:var(--dark-text); min-height: 2.4rem;">${station.name}</h6>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; border: 1px solid ${statusColor}40;">
+                                    <i class="fas ${style.icon} me-1"></i> ${status}
+                                </span>
+                                <span class="fw-bold fs-5" style="color:${statusColor}">${indicator}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 }
 
