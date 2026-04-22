@@ -541,11 +541,6 @@
                     <option value="CAS-SUB Estacion Bomberos">CAS-SUB Estacion Bomberos</option>
                     <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander</option>
                   </optgroup>
-                  <optgroup label="Hidrológica (Clima)">
-                    <option value="PIRMA-3 HATO">PIRMA-3 HATO</option>
-                    <option value="PIRMA-2 ENCINO">PIRMA-2 ENCINO</option>
-                    <option value="PIRMA-1 CURITI">PIRMA-1 CURITI</option>
-                  </optgroup>
                 </select>
               </div>
               
@@ -571,8 +566,7 @@
               <div class="col-md-12 mt-3 p-3 rounded" style="background:rgba(255,255,255,0.02); border:1px solid var(--border-glow);">
                 <h6 class="small fw-bold text-muted mb-3"><i class="fas fa-list me-2"></i>Variables Detalladas (Opcional)</h6>
                 <div class="row g-2">
-                    <div class="col-2"><label class="small-label d-block text-center mb-1">PM5</label><input type="text" id="manual-pm5" class="form-control form-control-glass text-center" placeholder="--"></div>
-                    <div class="col-2"><label class="small-label d-block text-center mb-1">PM10</label><input type="text" id="manual-pm10" class="form-control form-control-glass text-center" placeholder="--"></div>
+                    <div class="col-4"><label class="small-label d-block text-center mb-1">PM2.5</label><input type="text" id="manual-pm2_5" class="form-control form-control-glass text-center" placeholder="--"></div>
                     <div class="col-2"><label class="small-label d-block text-center mb-1">TEM</label><input type="text" id="manual-tem" class="form-control form-control-glass text-center" placeholder="--"></div>
                     <div class="col-3"><label class="small-label d-block text-center mb-1">HUM %</label><input type="text" id="manual-hum" class="form-control form-control-glass text-center" placeholder="--"></div>
                     <div class="col-3"><label class="small-label d-block text-center mb-1">VEL m/s</label><input type="text" id="manual-vel" class="form-control form-control-glass text-center" placeholder="--"></div>
@@ -607,11 +601,6 @@
                     <option value="CAS Escuela San Silvestre">CAS Escuela San Silvestre</option>
                     <option value="CAS-SUB Estacion Bomberos">CAS-SUB Estacion Bomberos</option>
                     <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander</option>
-                  </optgroup>
-                  <optgroup label="Hidrológica (Clima)">
-                    <option value="PIRMA-3 HATO">PIRMA-3 HATO</option>
-                    <option value="PIRMA-2 ENCINO">PIRMA-2 ENCINO</option>
-                    <option value="PIRMA-1 CURITI">PIRMA-1 CURITI</option>
                   </optgroup>
                 </select>
               </div>
@@ -855,8 +844,7 @@
            status, 
            timestamp: new Date().toISOString(),
            allData: {
-               pm5: document.getElementById('manual-pm5').value,
-               pm10: document.getElementById('manual-pm10').value,
+               pm2_5: document.getElementById('manual-pm2_5').value,
                tem: document.getElementById('manual-tem').value,
                hum: document.getElementById('manual-hum').value,
                vel: document.getElementById('manual-vel').value
@@ -879,8 +867,7 @@
        
        document.getElementById('manual-indicator').value = '';
        document.getElementById('manual-status').value = 'Estable';
-       document.getElementById('manual-pm5').value = '';
-       document.getElementById('manual-pm10').value = '';
+       document.getElementById('manual-pm2_5').value = '';
        document.getElementById('manual-tem').value = '';
        document.getElementById('manual-hum').value = '';
        document.getElementById('manual-vel').value = '';
@@ -909,14 +896,12 @@
            document.getElementById('manual-status').value = st.status || 'Estable';
 
            if(st.allData) {
-               document.getElementById('manual-pm5').value = st.allData.pm5 || '';
-               document.getElementById('manual-pm10').value = st.allData.pm10 || '';
+               document.getElementById('manual-pm2_5').value = st.allData.pm2_5 || '';
                document.getElementById('manual-tem').value = st.allData.tem || '';
                document.getElementById('manual-hum').value = st.allData.hum || '';
                document.getElementById('manual-vel').value = st.allData.vel || '';
            } else {
-               document.getElementById('manual-pm5').value = '';
-               document.getElementById('manual-pm10').value = '';
+               document.getElementById('manual-pm2_5').value = '';
                document.getElementById('manual-tem').value = '';
                document.getElementById('manual-hum').value = '';
                document.getElementById('manual-vel').value = '';
@@ -924,8 +909,7 @@
        } else {
            document.getElementById('manual-indicator').value = '';
            document.getElementById('manual-status').value = 'Estable';
-           document.getElementById('manual-pm5').value = '';
-           document.getElementById('manual-pm10').value = '';
+           document.getElementById('manual-pm2_5').value = '';
            document.getElementById('manual-tem').value = '';
            document.getElementById('manual-hum').value = '';
            document.getElementById('manual-vel').value = '';
@@ -973,17 +957,23 @@
     }
 
     function handleUploadedFile(file) {
+        console.log("📂 File detected:", file.name);
         const reader = new FileReader();
         reader.onload = (e) => {
             const content = e.target.result;
             parseFlatFile(content);
+            // Reset input so the same file can be uploaded again
+            document.getElementById('file-upload-input').value = '';
         };
         reader.readAsText(file);
     }
 
     function parseFlatFile(text) {
-        const lines = text.trim().split(/\r?\n/);
-        if (lines.length < 2) return;
+        const lines = text.trim().split(/\r?\n/).filter(l => l.trim() !== '');
+        if (lines.length < 2) {
+            console.error("File is too short or empty.");
+            return;
+        }
 
         // Intentar detectar separador (tab o comma)
         let sep = '\t';
@@ -1002,11 +992,11 @@
         };
 
         const data = {
-            pm5:  findVal(['PM2.5', 'alt. PM#5']),
+            pm2_5: findVal(['PM2.5', 'alt. PM#5', 'PM25']),
             pm10: findVal(['PM10']),
-            tem:  findVal(['T', 'aux. T']),
-            hum:  findVal(['rH', 'aux. h']),
-            vel:  findVal(['wind speed', 'velocity'])
+            tem:  findVal(['T', 'aux. T', 'Temperatue']),
+            hum:  findVal(['rH', 'aux. h', 'humidity']),
+            vel:  findVal(['wind speed', 'velocity', 'velocity avg'])
         };
 
         LAST_PARSED_DATA = data;
@@ -1019,7 +1009,7 @@
         preview.classList.remove('d-none');
 
         const items = [
-            { label: 'PM2.5 (PM5)', value: data.pm5, unit: 'µg/m³' },
+            { label: 'PM2.5', value: data.pm2_5, unit: 'µg/m³' },
             { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
             { label: 'Temperatura', value: data.tem, unit: '°C' },
             { label: 'Humedad', value: data.hum, unit: '%' },
@@ -1048,11 +1038,11 @@
         let status = 'Estable';
 
         if (groupLabel === 'Calidad de Aire') {
-            const val = LAST_PARSED_DATA.pm10 || LAST_PARSED_DATA.pm5 || '0';
+            const val = LAST_PARSED_DATA.pm2_5 || '0';
             indicator = `${val} µg/m³`;
             const nVal = parseFloat(val);
-            if(nVal > 50) status = 'Alerta';
-            else if(nVal > 25) status = 'Precaución';
+            if(nVal > 35) status = 'Alerta';
+            else if(nVal > 12) status = 'Precaución';
         } else {
             const val = LAST_PARSED_DATA.tem || '0';
             indicator = `${val} °C`;

@@ -15,11 +15,6 @@ class MapComponent {
 
         // ── Estaciones de Monitoreo ──────────────────────────────────────────
         this.stations = {
-            clima: [
-                { name: "PIRMA-3 HATO", coords: [6.520736, -73.366447], type: "Hidrologica (IDEAM)" },
-                { name: "PIRMA-2 ENCINO", coords: [6.135536, -73.112619], type: "Hidrologica (IDEAM)" },
-                { name: "PIRMA-1 CURITI", coords: [6.606756, -73.073383], type: "Hidrologica (IDEAM)" }
-            ],
             aire: [
                 { name: "CAS Alcaldia", short: "Alcaldia", coords: [7.06079, -73.87267], type: "Calidad de Aire" },
                 { name: "CAS Escuela San Silvestre", short: "San Silvestre", coords: [7.0834, -73.83934], type: "Calidad de Aire" },
@@ -30,7 +25,6 @@ class MapComponent {
 
         // Estilos visuales por categoria
         this.categoryStyle = {
-            clima: { color: '#3B9A54', icon: 'fa-cloud-sun' },
             aire: { color: '#3399CC', icon: 'fa-wind' }
         };
     }
@@ -48,21 +42,16 @@ class MapComponent {
         this.changeStyle('voyager');
         L.control.attribution({ position: 'bottomleft' }).addTo(this.map);
 
-        // 2. Crear los LayerGroups AHORA que el mapa existe
+        // 2. Crear el LayerGroup para Aire (Única capa activa)
         this.layers = {
-            clima: L.layerGroup(),
             aire: L.layerGroup()
         };
 
-        // 3. Poblar cada layer con marcadores
+        // 3. Poblar layer con marcadores
         this._buildStationLayers();
 
-        // 4. Mostrar capa inicial y encuadrar
-        this.currentLayer = 'clima';
-        this.layers.clima.addTo(this.map);
-        this._fitToLayer('clima');
-        this._renderCards();
-        this._updateLegend('clima');
+        // 4. Mostrar Aire por defecto
+        this.switchLayer('aire');
 
         // 5. Selector de estilo de mapa
         const styleSelect = document.getElementById('map-style-select');
@@ -124,50 +113,16 @@ class MapComponent {
                     <h6 class="mb-0">Escalas de Calidad de Aire</h6>
                     <span class="badge bg-info text-white" style="font-size:0.6rem;">Marco de referencia</span>
                 </div>
-                <div class="row g-2">
-                    <div class="col-6">
-                        <div class="small fw-bold mb-1" style="font-size:0.65rem; color:#666;">PARTÍCULAS (PM5 / PM10)</div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="small fw-bold mb-1" style="font-size:0.65rem; color:#666;">PARTÍCULAS PM2.5 (µg/m³)</div>
                         <div class="legend-items">
                             <div class="legend-item"><span class="color-box" style="background-color:#4CAF50; width:15px; height:10px;"></span> 0 - 25 <small class="ms-1">Bueno</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#FFC107; width:15px; height:10px;"></span> 26 - 50 <small class="ms-1">Mod.</small></div>
+                            <div class="legend-item"><span class="color-box" style="background-color:#FFC107; width:15px; height:10px;"></span> 26 - 50 <small class="ms-1">Moderado</small></div>
                             <div class="legend-item"><span class="color-box" style="background-color:#FF9800; width:15px; height:10px;"></span> 51 - 75 <small class="ms-1">Dañino</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#EF4444; width:15px; height:10px;"></span> > 75 <small class="ms-1">Peligro</small></div>
+                            <div class="legend-item"><span class="color-box" style="background-color:#EF4444; width:15px; height:10px;"></span> > 75 <small class="ms-1">Peligroso</small></div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="small fw-bold mb-1" style="font-size:0.65rem; color:#666;">TEMPERATURA (°C)</div>
-                        <div class="legend-items">
-                            <div class="legend-item"><span class="color-box" style="background-color:#3B9A54; width:15px; height:10px;"></span> < 28 <small class="ms-1">Estable</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#FFC107; width:15px; height:10px;"></span> 28-33 <small class="ms-1">Cálido</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#FF9800; width:15px; height:10px;"></span> 34-38 <small class="ms-1">Extremo</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#EF4444; width:15px; height:10px;"></span> > 38 <small class="ms-1">Peligro</small></div>
-                        </div>
-                    </div>
-                    <div class="col-6 mt-2">
-                        <div class="small fw-bold mb-1" style="font-size:0.65rem; color:#666;">HUMEDAD (%)</div>
-                        <div class="legend-items">
-                            <div class="legend-item"><span class="color-box" style="background-color:#4CAF50; width:15px; height:10px;"></span> 40-70 <small class="ms-1">Ideal</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#FFC107; width:15px; height:10px;"></span> > 70 <small class="ms-1">Húmedo</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#FF9800; width:15px; height:10px;"></span> < 40 <small class="ms-1">Seco</small></div>
-                        </div>
-                    </div>
-                    <div class="col-6 mt-2">
-                        <div class="small fw-bold mb-1" style="font-size:0.65rem; color:#666;">VIENTO (m/s)</div>
-                        <div class="legend-items">
-                            <div class="legend-item"><span class="color-box" style="background-color:#4CAF50; width:15px; height:10px;"></span> < 5 <small class="ms-1">Calma</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#FFC107; width:15px; height:10px;"></span> 5-15 <small class="ms-1">Brisa</small></div>
-                            <div class="legend-item"><span class="color-box" style="background-color:#EF4444; width:15px; height:10px;"></span> > 15 <small class="ms-1">Fuerte</small></div>
-                        </div>
-                    </div>
-                </div>`;
-        } else if (layerName === 'clima') {
-            html = `
-                <h6>Escala de Temperatura (°C)</h6>
-                <div class="legend-items">
-                    <div class="legend-item"><span class="color-box" style="background-color:#3B9A54"></span> <strong>ESTABLE</strong> < 28°</div>
-                    <div class="legend-item"><span class="color-box" style="background-color:#FFC107"></span> <strong>CÁLIDO</strong> 28-33°</div>
-                    <div class="legend-item"><span class="color-box" style="background-color:#FF9800"></span> <strong>EXTREMO</strong> 34-38°</div>
-                    <div class="legend-item"><span class="color-box" style="background-color:#EF4444"></span> <strong>PELIGROSO</strong> >38°</div>
                 </div>`;
         }
         legend.innerHTML = html;
@@ -178,7 +133,7 @@ class MapComponent {
         const val = parseFloat(value);
         if (isNaN(val)) return 'status-neutral';
 
-        if (name === 'pm5' || name === 'pm2.5') {
+        if (name === 'pm2.5' || name === 'pm2_5') {
             if (val <= 12) return 'status-good';
             if (val <= 35) return 'status-warn';
             return 'status-danger';
@@ -203,6 +158,17 @@ class MapComponent {
             return 'status-danger';
         }
         return 'status-neutral';
+    }
+
+    _formatVal(name, value) {
+        if (!value || value === '--') return '--';
+        const val = parseFloat(value);
+        if (isNaN(val)) return value;
+        
+        if (name === 'hum') return Math.round(val).toString();
+        
+        // Max 2 decimals
+        return Number(val.toFixed(2)).toString();
     }
 
     _updateGlobalStats(layerName) {
@@ -392,8 +358,12 @@ class MapComponent {
                 indicator = override.indicator || '--';
                 status = override.status;
             } else {
-                indicator = (this.currentLayer === 'aire') ? '15 µg/m³' : (this.currentLayer === 'clima' ? '28 °C' : '7.0 pH');
+                indicator = (this.currentLayer === 'aire') ? '15' : '28';
             }
+
+            // Aplicamos formato al indicador principal (solo valor, la unidad va después)
+            indicator = this._formatVal(this.currentLayer === 'aire' ? 'pm2_5' : 'tem', indicator);
+            const displayIndicator = (this.currentLayer === 'aire') ? `${indicator} µg/m³` : `${indicator} °C`;
 
             let statusColor = this._getColorForValue(this.currentLayer, indicator, style.color);
             if (override && override.status === 'Offline') statusColor = '#6c757d';
@@ -402,7 +372,7 @@ class MapComponent {
             let d = (override && override.allData) ? override.allData : null;
             if (!d) {
                 if (this.currentLayer === 'aire') {
-                    d = { pm5: '8.4', pm10: '15', tem: '31', hum: '65', vel: '2.1' };
+                    d = { pm2_5: '15.0', tem: '31', hum: '65', vel: '2.1' };
                 } else if (this.currentLayer === 'clima') {
                     d = { tem: '32', hum: '62', vel: '3.5' };
                 }
@@ -414,11 +384,10 @@ class MapComponent {
                     extraInfo = `
                         <div class="variables-grid mt-2 mb-3">
                             <div class="row g-2 text-center">
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('pm5', d.pm5)}"><span>PM5</span><strong>${d.pm5 || '--'}</strong></div></div>
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('pm10', d.pm10)}"><span>PM10</span><strong>${d.pm10 || '--'}</strong></div></div>
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${d.tem || '--'}°</strong></div></div>
-                                <div class="col-6"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${d.hum || '--'}%</strong></div></div>
-                                <div class="col-6"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${d.vel || '--'} <small>m/s</small></strong></div></div>
+                                <div class="col-8"><div class="var-box ${this._getVarStatus('pm2_5', d.pm2_5)}"><span>PM2.5</span><strong>${this._formatVal('pm2_5', d.pm2_5)}</strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${this._formatVal('tem', d.tem)}°</strong></div></div>
+                                <div class="col-6"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${this._formatVal('hum', d.hum)}%</strong></div></div>
+                                <div class="col-6"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${this._formatVal('vel', d.vel)} <small>m/s</small></strong></div></div>
                             </div>
                         </div>
                     `;
@@ -426,7 +395,7 @@ class MapComponent {
                     extraInfo = `
                         <div class="variables-grid mt-2 mb-3">
                             <div class="row g-2 text-center">
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${d.tem || '--'}°</strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><int>${d.tem || '--'}°</int></div></div>
                                 <div class="col-4"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${d.hum || '--'}%</strong></div></div>
                                 <div class="col-4"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${d.vel || '--'} <small>m/s</small></strong></div></div>
                             </div>
@@ -448,7 +417,7 @@ class MapComponent {
                                 <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; border: 1px solid ${statusColor}40;">
                                     <i class="fas ${style.icon} me-1"></i> ${status}
                                 </span>
-                                <span class="fw-bold fs-5" style="color:${statusColor}">${indicator}</span>
+                                <span class="fw-bold fs-5" style="color:${statusColor}">${displayIndicator}</span>
                             </div>
                         </div>
                     </div>

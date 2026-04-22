@@ -27,11 +27,8 @@
                 <img src="logo-inner.png" alt="Logo Barrancabermeja Ambiental" class="logo-img">
             </div>
             <div class="layer-selector">
-                <div class="btn-group" role="group" aria-label="Capas ambientales">
-                    <input type="radio" class="btn-check" name="layerBtn" id="layerClima" checked>
-                    <label class="btn btn-outline-primary" for="layerClima"><i
-                            class="fas fa-cloud-sun me-2"></i>Clima</label>
-                    <input type="radio" class="btn-check" name="layerBtn" id="layerAire">
+                <div class="layer-selector-container">
+                    <input type="radio" class="btn-check" name="layerBtn" id="layerAire" checked>
                     <label class="btn btn-outline-info" for="layerAire"><i class="fas fa-wind me-2"></i>Calidad del
                         Aire</label>
                 </div>
@@ -44,42 +41,6 @@
                 </a>
             </div>
         </header>
-
-        <!-- Global Metrics Bar (NEW) -->
-        <div class="row mx-4 mt-3 mb-2 g-3">
-            <div class="col-md-4">
-                <div class="card glass shadow-sm mb-0 p-2 d-flex flex-row align-items-center gap-3">
-                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary"><i
-                            class="fas fa-chart-line"></i></div>
-                    <div>
-                        <div class="small-label">Promedio General</div>
-                        <h4 class="mb-0 fw-bold" id="global-avg-val">--</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card glass shadow-sm mb-0 p-2 d-flex flex-row align-items-center gap-3">
-                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning"><i
-                            class="fas fa-exclamation-triangle"></i></div>
-                    <div>
-                        <div class="small-label">Estaciones en Alerta</div>
-                        <h4 class="mb-0 fw-bold" id="global-alert-count">0</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card glass shadow-sm mb-0 p-2 d-flex flex-row align-items-center gap-3">
-                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success" id="global-status-icon"><i
-                            class="fas fa-check-circle"></i></div>
-                    <div>
-                        <div class="small-label">Estado del Sistema</div>
-                        <div id="global-status-text" class="text-success fw-bold">Verificando...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
         <main class="dashboard-content mt-4">
             <div class="container-fluid">
                 <div class="row">
@@ -106,13 +67,17 @@
                                     <h6>Índice de Calidad del Aire (ICA)</h6>
                                     <div class="legend-items">
                                         <div class="legend-item"><span class="color-box good"></span>
-                                            <strong>BUENO</strong> 0-25</div>
+                                            <strong>BUENO</strong> 0-25
+                                        </div>
                                         <div class="legend-item"><span class="color-box moderate"></span>
-                                            <strong>MODERADO</strong> 26-50</div>
+                                            <strong>MODERADO</strong> 26-50
+                                        </div>
                                         <div class="legend-item"><span class="color-box unhealthy"></span>
-                                            <strong>DAÑINO</strong> 51-75</div>
+                                            <strong>DAÑINO</strong> 51-75
+                                        </div>
                                         <div class="legend-item"><span class="color-box danger"></span>
-                                            <strong>PELIGROSO</strong> >75</div>
+                                            <strong>PELIGROSO</strong> >75
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -230,7 +195,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- App Scripts -->
-    <script type="module" src="js/main.js?v=6.2"></script>
+    <script type="module" src="js/main.js?v=6.6"></script>
 </body>
 
 </html>

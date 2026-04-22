@@ -5,7 +5,7 @@
 
 import { weatherService } from './services/weatherService.js?v=6.0';
 import { predictionService } from './services/predictionService.js?v=6.0';
-import { mapComponent } from './components/mapComponent.js?v=6.1';
+import { mapComponent } from './components/mapComponent.js?v=6.2';
 import { dataPanel } from './components/dataPanel.js?v=6.0';
 import { predictionPanel } from './components/predictionPanel.js?v=6.0';
 import { recommendationPanel } from './components/recommendationPanel.js?v=6.0';
