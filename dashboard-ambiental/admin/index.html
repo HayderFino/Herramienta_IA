@@ -5,7 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Administración – Dashboard Ambiental</title>
-  <meta name="description" content="Panel de administración para la inspección manual de datos del Dashboard Ambiental de Barrancabermeja." />
+  <meta name="description"
+    content="Panel de administración para la inspección manual de datos del Dashboard Ambiental de Barrancabermeja." />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -23,7 +24,11 @@
       --muted: #718096;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Outfit', sans-serif;
@@ -60,20 +65,23 @@
     .login-card {
       width: 100%;
       max-width: 420px;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border-glow);
       border-radius: 20px;
       padding: 2.5rem;
       backdrop-filter: blur(16px);
-      box-shadow: 0 0 60px rgba(99, 179, 237, 0.12), 0 25px 50px rgba(0,0,0,0.5);
+      box-shadow: 0 0 60px rgba(99, 179, 237, 0.12), 0 25px 50px rgba(0, 0, 0, 0.5);
       animation: fadeInUp .5s ease;
     }
 
     .login-card .icon-wrap {
-      width: 64px; height: 64px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin: 0 auto 1.5rem;
       font-size: 1.6rem;
       box-shadow: 0 0 30px rgba(99, 179, 237, 0.4);
@@ -81,15 +89,33 @@
     }
 
     @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 30px rgba(99,179,237,.4); }
-      50%       { box-shadow: 0 0 50px rgba(99,179,237,.7); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 30px rgba(99, 179, 237, .4);
+      }
+
+      50% {
+        box-shadow: 0 0 50px rgba(99, 179, 237, .7);
+      }
     }
 
-    .login-card h2 { text-align: center; font-weight: 700; font-size: 1.4rem; margin-bottom: .3rem; }
-    .login-card p.sub { text-align: center; color: var(--muted); font-size: .85rem; margin-bottom: 1.8rem; }
+    .login-card h2 {
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      margin-bottom: .3rem;
+    }
+
+    .login-card p.sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      margin-bottom: 1.8rem;
+    }
 
     .form-control-glass {
-      background: rgba(255,255,255,0.07);
+      background: rgba(255, 255, 255, 0.07);
       border: 1px solid var(--border-glow);
       color: var(--text);
       border-radius: 10px;
@@ -97,11 +123,12 @@
       font-family: 'Outfit', sans-serif;
       transition: border-color .3s, box-shadow .3s;
     }
+
     .form-control-glass:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99,179,237,.15);
-      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, .15);
+      background: rgba(255, 255, 255, 0.1);
       color: var(--text);
     }
 
@@ -119,8 +146,15 @@
       transition: transform .2s, box-shadow .2s;
       margin-top: .5rem;
     }
-    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,179,237,.35); }
-    .btn-login:active { transform: translateY(0); }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 179, 237, .35);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
 
     #login-error {
       margin-top: .8rem;
@@ -131,81 +165,173 @@
     }
 
     /* ── MAIN PANEL ── */
-    #admin-panel { display: none; position: relative; z-index: 1; }
+    #admin-panel {
+      display: none;
+      position: relative;
+      z-index: 1;
+    }
 
     /* Topbar */
     .admin-topbar {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 1rem 2rem;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255, 255, 255, 0.04);
       border-bottom: 1px solid var(--border-glow);
       backdrop-filter: blur(12px);
-      position: sticky; top: 0; z-index: 100;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .admin-topbar .brand { display: flex; align-items: center; gap: .8rem; }
+
+    .admin-topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+
     .admin-topbar .brand-icon {
-      width: 38px; height: 38px; border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1rem;
     }
-    .admin-topbar h1 { font-size: 1.1rem; font-weight: 700; margin: 0; }
-    .admin-topbar .sub { font-size: .75rem; color: var(--muted); }
 
-    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .admin-topbar h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .admin-topbar .sub {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
     .badge-role {
       padding: .35rem .8rem;
       border-radius: 20px;
-      background: rgba(99,179,237,.15);
-      border: 1px solid rgba(99,179,237,.3);
+      background: rgba(99, 179, 237, .15);
+      border: 1px solid rgba(99, 179, 237, .3);
       color: var(--accent);
       font-size: .78rem;
       font-weight: 600;
     }
+
     .btn-logout {
-      display: flex; align-items: center; gap: .4rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
       padding: .4rem .9rem;
       border-radius: 8px;
-      border: 1px solid rgba(252,129,129,.3);
-      background: rgba(252,129,129,.08);
+      border: 1px solid rgba(252, 129, 129, .3);
+      background: rgba(252, 129, 129, .08);
       color: var(--danger);
       cursor: pointer;
       font-family: 'Outfit', sans-serif;
       font-size: .85rem;
       transition: background .2s, transform .15s;
     }
-    .btn-logout:hover { background: rgba(252,129,129,.18); transform: translateY(-1px); }
+
+    .btn-logout:hover {
+      background: rgba(252, 129, 129, .18);
+      transform: translateY(-1px);
+    }
 
     /* Content */
-    .admin-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+    .admin-content {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
     /* Stats Row */
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
     .stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border-glow);
       border-radius: 14px;
       padding: 1.2rem 1.4rem;
-      display: flex; align-items: center; gap: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
       backdrop-filter: blur(10px);
       transition: transform .2s, border-color .2s;
     }
-    .stat-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+    }
+
     .stat-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.1rem;
     }
-    .stat-icon.blue  { background: rgba(99,179,237,.15); color: var(--accent); }
-    .stat-icon.purple{ background: rgba(159,122,234,.15); color: var(--accent2); }
-    .stat-icon.green { background: rgba(104,211,145,.15); color: var(--success); }
-    .stat-icon.yellow{ background: rgba(246,201,14,.15);  color: var(--warning); }
 
-    .stat-info .label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-    .stat-info .value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+    .stat-icon.blue {
+      background: rgba(99, 179, 237, .15);
+      color: var(--accent);
+    }
+
+    .stat-icon.purple {
+      background: rgba(159, 122, 234, .15);
+      color: var(--accent2);
+    }
+
+    .stat-icon.green {
+      background: rgba(104, 211, 145, .15);
+      color: var(--success);
+    }
+
+    .stat-icon.yellow {
+      background: rgba(246, 201, 14, .15);
+      color: var(--warning);
+    }
+
+    .stat-info .label {
+      font-size: .72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .stat-info .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
 
     /* Tabs */
-    .admin-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .admin-tabs {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
     .admin-tab {
       padding: .5rem 1.2rem;
       border-radius: 8px;
@@ -217,7 +343,13 @@
       font-size: .88rem;
       transition: all .2s;
     }
-    .admin-tab.active, .admin-tab:hover { background: rgba(99,179,237,.15); border-color: var(--accent); color: var(--accent); }
+
+    .admin-tab.active,
+    .admin-tab:hover {
+      background: rgba(99, 179, 237, .15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
     /* Data Cards */
     .data-card {
@@ -228,16 +360,34 @@
       overflow: hidden;
       margin-bottom: 1.5rem;
     }
+
     .data-card-header {
       padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--border-glow);
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .data-card-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: .5rem; }
-    .data-card-body { overflow-x: auto; }
+
+    .data-card-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .data-card-body {
+      overflow-x: auto;
+    }
 
     /* Table */
-    .admin-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+    }
+
     .admin-table thead th {
       padding: .8rem 1.2rem;
       text-align: left;
@@ -247,11 +397,22 @@
       letter-spacing: .05em;
       font-size: .72rem;
       border-bottom: 1px solid var(--border-glow);
-      background: rgba(255,255,255,.03);
+      background: rgba(255, 255, 255, .03);
     }
-    .admin-table tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); transition: background .15s; }
-    .admin-table tbody tr:hover { background: rgba(99,179,237,.06); }
-    .admin-table tbody td { padding: .75rem 1.2rem; }
+
+    .admin-table tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      transition: background .15s;
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(99, 179, 237, .06);
+    }
+
+    .admin-table tbody td {
+      padding: .75rem 1.2rem;
+    }
+
     .pill {
       display: inline-block;
       padding: .2rem .7rem;
@@ -259,18 +420,39 @@
       font-size: .75rem;
       font-weight: 600;
     }
-    .pill-green  { background: rgba(104,211,145,.15); color: var(--success); }
-    .pill-blue   { background: rgba(99,179,237,.15);  color: var(--accent); }
-    .pill-yellow { background: rgba(246,201,14,.15);  color: var(--warning); }
-    .pill-red    { background: rgba(252,129,129,.15); color: var(--danger); }
+
+    .pill-green {
+      background: rgba(104, 211, 145, .15);
+      color: var(--success);
+    }
+
+    .pill-blue {
+      background: rgba(99, 179, 237, .15);
+      color: var(--accent);
+    }
+
+    .pill-yellow {
+      background: rgba(246, 201, 14, .15);
+      color: var(--warning);
+    }
+
+    .pill-red {
+      background: rgba(252, 129, 129, .15);
+      color: var(--danger);
+    }
 
     /* Tab panels */
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
 
     /* Credentials inspect */
     .cred-box {
-      background: rgba(0,0,0,.3);
+      background: rgba(0, 0, 0, .3);
       border: 1px solid var(--border-glow);
       border-radius: 12px;
       padding: 1.5rem;
@@ -283,27 +465,54 @@
 
     /* Back link */
     .back-link {
-      display: inline-flex; align-items: center; gap: .4rem;
-      color: var(--muted); font-size: .85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      color: var(--muted);
+      font-size: .85rem;
       text-decoration: none;
       padding: .35rem .8rem;
       border-radius: 8px;
       border: 1px solid var(--border-glow);
       transition: color .2s, border-color .2s;
     }
-    .back-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    .back-link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
 
     /* Animations */
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .admin-content { animation: fadeInUp .4s ease; }
+
+    .admin-content {
+      animation: fadeInUp .4s ease;
+    }
 
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(99,179,237,.3); border-radius: 3px; }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 179, 237, .3);
+      border-radius: 3px;
+    }
   </style>
 </head>
 
@@ -320,13 +529,12 @@
 
       <div class="mb-3">
         <label for="inp-user" class="form-label small text-muted">Usuario</label>
-        <input type="text" id="inp-user" class="form-control-glass w-100"
-               placeholder="Admin" autocomplete="username" />
+        <input type="text" id="inp-user" class="form-control-glass w-100" placeholder="Admin" autocomplete="username" />
       </div>
       <div class="mb-3">
         <label for="inp-pass" class="form-label small text-muted">Contraseña</label>
-        <input type="password" id="inp-pass" class="form-control-glass w-100"
-               placeholder="••••" autocomplete="current-password" />
+        <input type="password" id="inp-pass" class="form-control-glass w-100" placeholder="••••"
+          autocomplete="current-password" />
       </div>
 
       <button class="btn-login" id="btn-login" onclick="doLogin()">
@@ -477,16 +685,24 @@
           <div class="data-card-body" style="padding:1.5rem">
             <p class="small mb-3" style="color:var(--muted)">
               <i class="fas fa-info-circle me-1" style="color:var(--accent)"></i>
-              Las credenciales se almacenan en <code>admin/credentials.json</code>. Modifica ese archivo para actualizar accesos.
+              Las credenciales se almacenan en <code>admin/credentials.json</code>. Modifica ese archivo para actualizar
+              accesos.
             </p>
             <div class="cred-box" id="cred-display">Cargando credentials.json…</div>
-            <br/>
+            <br />
             <table class="admin-table">
               <thead>
-                <tr><th>Usuario</th><th>Rol</th><th>Creado</th><th>Estado</th></tr>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Creado</th>
+                  <th>Estado</th>
+                </tr>
               </thead>
               <tbody id="cred-table-body">
-                <tr><td colspan="4" style="color:var(--muted);text-align:center">Cargando…</td></tr>
+                <tr>
+                  <td colspan="4" style="color:var(--muted);text-align:center">Cargando…</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -512,12 +728,15 @@
         <div class="data-card">
           <div class="data-card-header">
             <h3><i class="fas fa-plug" style="color:var(--accent2)"></i>Estado del API Bridge</h3>
-            <button class="btn-logout" style="color:var(--accent);border-color:rgba(99,179,237,.3);background:rgba(99,179,237,.08)" onclick="checkAPI()">
+            <button class="btn-logout"
+              style="color:var(--accent);border-color:rgba(99,179,237,.3);background:rgba(99,179,237,.08)"
+              onclick="checkAPI()">
               <i class="fas fa-rotate-right me-1"></i>Verificar
             </button>
           </div>
           <div class="data-card-body" style="padding:1.5rem">
-            <div id="api-result" class="cred-box" style="color:var(--accent)">Haz clic en "Verificar" para comprobar el estado del API en localhost:8000</div>
+            <div id="api-result" class="cred-box" style="color:var(--accent)">Haz clic en "Verificar" para comprobar el
+              estado del API en localhost:8000</div>
           </div>
         </div>
       </div>
@@ -529,8 +748,9 @@
             <h3><i class="fas fa-edit" style="color:var(--warning)"></i>Ingreso Manual de Datos por Estación</h3>
           </div>
           <div class="data-card-body" style="padding:1.5rem;">
-            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Selecciona una estación para sobreescribir sus datos manualmente.</p>
-            
+            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Selecciona una estación para
+              sobreescribir sus datos manualmente.</p>
+
             <div class="row g-3">
               <div class="col-md-12">
                 <label class="form-label small text-muted">Estación a modificar</label>
@@ -539,16 +759,20 @@
                     <option value="CAS Alcaldia">CAS Alcaldia</option>
                     <option value="CAS Escuela San Silvestre">CAS Escuela San Silvestre</option>
                     <option value="CAS-SUB Estacion Bomberos">CAS-SUB Estacion Bomberos</option>
-                    <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander</option>
+                    <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander
+                    </option>
                   </optgroup>
                 </select>
               </div>
-              
+
               <div class="col-md-6 mt-3">
                 <label class="form-label small text-muted">Valor Numérico o Indicador</label>
                 <div class="input-group flex-nowrap">
-                  <input type="text" id="manual-indicator" class="form-control form-control-glass" style="border-top-right-radius:0; border-bottom-right-radius:0;" placeholder="Ingresa solo el número (Ej: 35)" />
-                  <span class="input-group-text form-control-glass" id="manual-unit" style="border-top-left-radius:0; border-bottom-left-radius:0; border-left:0; background:rgba(99,179,237,0.1); color:var(--accent); font-weight:bold;"></span>
+                  <input type="text" id="manual-indicator" class="form-control form-control-glass"
+                    style="border-top-right-radius:0; border-bottom-right-radius:0;"
+                    placeholder="Ingresa solo el número (Ej: 35)" />
+                  <span class="input-group-text form-control-glass" id="manual-unit"
+                    style="border-top-left-radius:0; border-bottom-left-radius:0; border-left:0; background:rgba(99,179,237,0.1); color:var(--accent); font-weight:bold;"></span>
                 </div>
               </div>
 
@@ -563,19 +787,27 @@
               </div>
 
               <!-- Extra Variables for Manual Input -->
-              <div class="col-md-12 mt-3 p-3 rounded" style="background:rgba(255,255,255,0.02); border:1px solid var(--border-glow);">
-                <h6 class="small fw-bold text-muted mb-3"><i class="fas fa-list me-2"></i>Variables Detalladas (Opcional)</h6>
+              <div class="col-md-12 mt-3 p-3 rounded"
+                style="background:rgba(255,255,255,0.02); border:1px solid var(--border-glow);">
+                <h6 class="small fw-bold text-muted mb-3"><i class="fas fa-list me-2"></i>Variables Detalladas
+                  (Opcional)</h6>
                 <div class="row g-2">
-                    <div class="col-4"><label class="small-label d-block text-center mb-1">PM2.5</label><input type="text" id="manual-pm2_5" class="form-control form-control-glass text-center" placeholder="--"></div>
-                    <div class="col-2"><label class="small-label d-block text-center mb-1">TEM</label><input type="text" id="manual-tem" class="form-control form-control-glass text-center" placeholder="--"></div>
-                    <div class="col-3"><label class="small-label d-block text-center mb-1">HUM %</label><input type="text" id="manual-hum" class="form-control form-control-glass text-center" placeholder="--"></div>
-                    <div class="col-3"><label class="small-label d-block text-center mb-1">VEL m/s</label><input type="text" id="manual-vel" class="form-control form-control-glass text-center" placeholder="--"></div>
+                  <div class="col-4"><label class="small-label d-block text-center mb-1">PM2.5</label><input type="text"
+                      id="manual-pm2_5" class="form-control form-control-glass text-center" placeholder="--"></div>
+                  <div class="col-2"><label class="small-label d-block text-center mb-1">TEM</label><input type="text"
+                      id="manual-tem" class="form-control form-control-glass text-center" placeholder="--"></div>
+                  <div class="col-3"><label class="small-label d-block text-center mb-1">HUM %</label><input type="text"
+                      id="manual-hum" class="form-control form-control-glass text-center" placeholder="--"></div>
+                  <div class="col-3"><label class="small-label d-block text-center mb-1">VEL m/s</label><input
+                      type="text" id="manual-vel" class="form-control form-control-glass text-center" placeholder="--">
+                  </div>
                 </div>
               </div>
 
               <div class="col-md-12 mt-4 text-end">
-                 <button class="btn btn-outline-danger me-2" onclick="clearManualData()">Limpiar Datos</button>
-                 <button class="btn btn-primary" style="background:var(--accent);border:none;color:#111;font-weight:600;" onclick="saveManualData()"><i class="fas fa-save me-2"></i>Inyectar Datos</button>
+                <button class="btn btn-outline-danger me-2" onclick="clearManualData()">Limpiar Datos</button>
+                <button class="btn btn-primary" style="background:var(--accent);border:none;color:#111;font-weight:600;"
+                  onclick="saveManualData()"><i class="fas fa-save me-2"></i>Inyectar Datos</button>
               </div>
               <div class="col-md-12 mt-2" id="manual-msg"></div>
             </div>
@@ -590,8 +822,9 @@
             <h3><i class="fas fa-file-import" style="color:var(--accent)"></i>Carga de Archivos Planos (Aire)</h3>
           </div>
           <div class="data-card-body" style="padding:1.5rem;">
-            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Sube el archivo plano de la estación para extraer automáticamente el último registro.</p>
-            
+            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Sube el archivo plano de la estación
+              para extraer automáticamente el último registro.</p>
+
             <div class="row g-3">
               <div class="col-md-12">
                 <label class="form-label small text-muted">Estación de Aire</label>
@@ -600,17 +833,20 @@
                     <option value="CAS Alcaldia">CAS Alcaldia</option>
                     <option value="CAS Escuela San Silvestre">CAS Escuela San Silvestre</option>
                     <option value="CAS-SUB Estacion Bomberos">CAS-SUB Estacion Bomberos</option>
-                    <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander</option>
+                    <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander
+                    </option>
                   </optgroup>
                 </select>
               </div>
-              
+
               <div class="col-md-12 mt-3">
-                <div id="drop-zone-admin" class="p-5 text-center border-dashed rounded" style="border: 2px dashed var(--border-glow); background: rgba(255,255,255,0.02); cursor: pointer;">
+                <div id="drop-zone-admin" class="p-5 text-center border-dashed rounded"
+                  style="border: 2px dashed var(--border-glow); background: rgba(255,255,255,0.02); cursor: pointer;">
                   <i class="fas fa-file-upload fa-3x mb-3 text-muted"></i>
                   <p>Arrastra el archivo plano aquí o haz clic para seleccionar</p>
                   <input type="file" id="file-upload-input" class="d-none" accept=".csv,.txt">
-                  <button class="btn btn-sm btn-outline-info" onclick="document.getElementById('file-upload-input').click()">Seleccionar Archivo</button>
+                  <button class="btn btn-sm btn-outline-info"
+                    onclick="document.getElementById('file-upload-input').click()">Seleccionar Archivo</button>
                 </div>
               </div>
 
@@ -621,11 +857,13 @@
                     <!-- filled by JS -->
                   </div>
                   <div class="text-end mt-3">
-                    <button class="btn btn-primary btn-sm" style="background:var(--accent); border:none; color:#111; font-weight:600;" onclick="applyUploadedData()">Confirmar e Inyectar</button>
+                    <button class="btn btn-primary btn-sm"
+                      style="background:var(--accent); border:none; color:#111; font-weight:600;"
+                      onclick="applyUploadedData()">Confirmar e Inyectar</button>
                   </div>
                 </div>
               </div>
-              
+
               <div class="col-md-12 mt-2" id="upload-msg"></div>
             </div>
           </div>
@@ -639,20 +877,23 @@
             <h3><i class="fas fa-cog" style="color:var(--accent)"></i>Preferencias de Visualización</h3>
           </div>
           <div class="data-card-body" style="padding:1.5rem;">
-            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Personaliza cómo se muestra el dashboard principal.</p>
-            
+            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Personaliza cómo se muestra el
+              dashboard principal.</p>
+
             <div class="row g-3 d-flex align-items-center">
               <div class="col-8">
                 <h6 class="mb-1">Activar Modelo Predictivo (IA)</h6>
-                <p class="small text-muted mb-0">Muestra la columna derecha con el análisis de IA y recomendaciones. (Desactivado por defecto).</p>
+                <p class="small text-muted mb-0">Muestra la columna derecha con el análisis de IA y recomendaciones.
+                  (Desactivado por defecto).</p>
               </div>
               <div class="col-4 text-end">
                 <div class="form-check form-switch d-inline-block">
-                  <input class="form-check-input" type="checkbox" id="toggle-show-model" style="width:3rem; height:1.5rem; cursor:pointer;" onchange="updateDashboardConfig()">
+                  <input class="form-check-input" type="checkbox" id="toggle-show-model"
+                    style="width:3rem; height:1.5rem; cursor:pointer;" onchange="updateDashboardConfig()">
                 </div>
               </div>
             </div>
-            
+
             <div id="config-msg" class="mt-3"></div>
           </div>
         </div>
@@ -663,9 +904,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ─── CREDENTIALS (embedded from credentials.json) ───────────────────────
-    // In a real server environment, this would be fetched securely.
-    // For this static demo, we load the JSON via fetch from the same origin.
     let CREDENTIALS = null;
 
     async function loadCredentials() {
@@ -673,7 +911,7 @@
         const r = await fetch('credentials.json');
         CREDENTIALS = await r.json();
         renderCredentials();
-      } catch(e) {
+      } catch (e) {
         CREDENTIALS = { users: [{ username: 'Admin', password: '1234', role: 'administrator', created: '2026-04-13' }] };
         renderCredentials();
       }
@@ -704,7 +942,7 @@
     }
 
     // Allow Enter key
-    document.addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
     function doLogout() {
       sessionStorage.removeItem('admin_user');
@@ -749,7 +987,7 @@
 
     // ─── API CHECK ────────────────────────────────────────────────────────────
     async function checkAPI() {
-      const box  = document.getElementById('api-result');
+      const box = document.getElementById('api-result');
       const pill = document.getElementById('api-status-pill');
       const stat = document.getElementById('stat-api');
       box.textContent = 'Verificando conexión con localhost:8000…';
@@ -762,7 +1000,7 @@
         box.textContent = `✅ API Disponible (${ms}ms)\n\nRespuesta:\n${data}`;
         pill.className = 'pill pill-green'; pill.textContent = 'Online';
         stat.textContent = 'Online';
-      } catch(e) {
+      } catch (e) {
         box.style.color = 'var(--danger)';
         box.textContent = `❌ API no disponible en localhost:8000\n\nPara iniciarla ejecuta:\n  python api_bridge.py\n\nError: ${e.message}`;
         pill.className = 'pill pill-red'; pill.textContent = 'Offline';
@@ -774,20 +1012,20 @@
     // ─── CSV LIST ─────────────────────────────────────────────────────────────
     function renderCSVList() {
       const csvFiles = [
-        { name: 'AIRE_TÓXICO_APOCALIPSIS.csv',   size: '~92 B',  scenario: 'Calidad muy mala' },
-        { name: 'ALERTA_CALOR_CRITICA.csv',       size: '~91 B',  scenario: 'Alerta de calor' },
-        { name: 'DIA_PERFECTO_ESTABLE.csv',       size: '~87 B',  scenario: 'Condiciones ideales' },
-        { name: 'archivo_prueba_AIRE_LIMPIO.csv', size: '~1.4 KB',scenario: 'Aire limpio' },
-        { name: 'archivo_prueba_APOCALIPSIS.csv', size: '~1.6 KB',scenario: 'Escenario apocalipsis' },
-        { name: 'archivo_prueba_dia.csv',         size: '~1.5 KB',scenario: 'Día promedio' },
+        { name: 'AIRE_TÓXICO_APOCALIPSIS.csv', size: '~92 B', scenario: 'Calidad muy mala' },
+        { name: 'ALERTA_CALOR_CRITICA.csv', size: '~91 B', scenario: 'Alerta de calor' },
+        { name: 'DIA_PERFECTO_ESTABLE.csv', size: '~87 B', scenario: 'Condiciones ideales' },
+        { name: 'archivo_prueba_AIRE_LIMPIO.csv', size: '~1.4 KB', scenario: 'Aire limpio' },
+        { name: 'archivo_prueba_APOCALIPSIS.csv', size: '~1.6 KB', scenario: 'Escenario apocalipsis' },
+        { name: 'archivo_prueba_dia.csv', size: '~1.5 KB', scenario: 'Día promedio' },
       ];
-      const colors = ['pill-green','pill-red','pill-blue','pill-green','pill-red','pill-yellow'];
+      const colors = ['pill-green', 'pill-red', 'pill-blue', 'pill-green', 'pill-red', 'pill-yellow'];
       document.getElementById('stat-records').textContent = csvFiles.length;
       document.getElementById('csv-list').innerHTML = `
         <table class="admin-table">
           <thead><tr><th>Archivo</th><th>Tamaño</th><th>Escenario</th><th>Tipo</th></tr></thead>
           <tbody>
-            ${csvFiles.map((f,i) => `
+            ${csvFiles.map((f, i) => `
               <tr>
                 <td><i class="fas fa-file-csv me-2" style="color:var(--success)"></i><code>${f.name}</code></td>
                 <td>${f.size}</td>
@@ -805,121 +1043,121 @@
 
     // ─── MANUAL DATA INJECTION ────────────────────────────────────────────────
     async function syncManualDataToServer() {
-        const data = localStorage.getItem('manualStationData') || '{}';
-        try {
-            await fetch('http://localhost:8000/api/manual_data', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: data
-            });
-        } catch(e) { console.error("Error saving manual data to server:", e); }
+      const data = localStorage.getItem('manualStationData') || '{}';
+      try {
+        await fetch('http://localhost:8000/api/manual_data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: data
+        });
+      } catch (e) { console.error("Error saving manual data to server:", e); }
     }
 
     async function loadManualDataFromServer() {
-        try {
-            const r = await fetch('http://localhost:8000/api/manual_data?t=' + Date.now());
-            if (r.ok) {
-                const data = await r.json();
-                localStorage.setItem('manualStationData', JSON.stringify(data));
-                const ev = new Event('change');
-                document.getElementById('manual-station').dispatchEvent(ev);
-            }
-        } catch(e) { console.warn("Could not load manual data from server", e); }
+      try {
+        const r = await fetch('http://localhost:8000/api/manual_data?t=' + Date.now());
+        if (r.ok) {
+          const data = await r.json();
+          localStorage.setItem('manualStationData', JSON.stringify(data));
+          const ev = new Event('change');
+          document.getElementById('manual-station').dispatchEvent(ev);
+        }
+      } catch (e) { console.warn("Could not load manual data from server", e); }
     }
 
     // Load initially
     loadManualDataFromServer();
 
     function saveManualData() {
-       const station = document.getElementById('manual-station').value;
-       const rawVal = document.getElementById('manual-indicator').value.trim();
-       const unit = document.getElementById('manual-unit').innerText;
-       const status = document.getElementById('manual-status').value;
-       
-       let indicator = rawVal ? `${rawVal} ${unit}`.trim() : '';
+      const station = document.getElementById('manual-station').value;
+      const rawVal = document.getElementById('manual-indicator').value.trim();
+      const unit = document.getElementById('manual-unit').innerText;
+      const status = document.getElementById('manual-status').value;
 
-       let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
-       manualData[station] = { 
-           indicator, 
-           status, 
-           timestamp: new Date().toISOString(),
-           allData: {
-               pm2_5: document.getElementById('manual-pm2_5').value,
-               tem: document.getElementById('manual-tem').value,
-               hum: document.getElementById('manual-hum').value,
-               vel: document.getElementById('manual-vel').value
-           }
-       };
-       localStorage.setItem('manualStationData', JSON.stringify(manualData));
-       syncManualDataToServer();
-       
-       const msg = document.getElementById('manual-msg');
-       msg.innerHTML = `<span class="badge bg-success" style="padding:8px"><i class="fas fa-check me-2"></i>Datos inyectados a ${station}</span>`;
-       setTimeout(() => msg.innerHTML = '', 3000);
+      let indicator = rawVal ? `${rawVal} ${unit}`.trim() : '';
+
+      let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+      manualData[station] = {
+        indicator,
+        status,
+        timestamp: new Date().toISOString(),
+        allData: {
+          pm2_5: document.getElementById('manual-pm2_5').value,
+          tem: document.getElementById('manual-tem').value,
+          hum: document.getElementById('manual-hum').value,
+          vel: document.getElementById('manual-vel').value
+        }
+      };
+      localStorage.setItem('manualStationData', JSON.stringify(manualData));
+      syncManualDataToServer();
+
+      const msg = document.getElementById('manual-msg');
+      msg.innerHTML = `<span class="badge bg-success" style="padding:8px"><i class="fas fa-check me-2"></i>Datos inyectados a ${station}</span>`;
+      setTimeout(() => msg.innerHTML = '', 3000);
     }
-    
+
     function clearManualData() {
-       const station = document.getElementById('manual-station').value;
-       let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
-       delete manualData[station];
-       localStorage.setItem('manualStationData', JSON.stringify(manualData));
-       syncManualDataToServer();
-       
-       document.getElementById('manual-indicator').value = '';
-       document.getElementById('manual-status').value = 'Estable';
-       document.getElementById('manual-pm2_5').value = '';
-       document.getElementById('manual-tem').value = '';
-       document.getElementById('manual-hum').value = '';
-       document.getElementById('manual-vel').value = '';
-       
-       const msg = document.getElementById('manual-msg');
-       msg.innerHTML = `<span class="badge bg-danger" style="padding:8px"><i class="fas fa-trash me-2"></i>Datos eliminados de ${station}</span>`;
-       setTimeout(() => msg.innerHTML = '', 3000);
+      const station = document.getElementById('manual-station').value;
+      let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+      delete manualData[station];
+      localStorage.setItem('manualStationData', JSON.stringify(manualData));
+      syncManualDataToServer();
+
+      document.getElementById('manual-indicator').value = '';
+      document.getElementById('manual-status').value = 'Estable';
+      document.getElementById('manual-pm2_5').value = '';
+      document.getElementById('manual-tem').value = '';
+      document.getElementById('manual-hum').value = '';
+      document.getElementById('manual-vel').value = '';
+
+      const msg = document.getElementById('manual-msg');
+      msg.innerHTML = `<span class="badge bg-danger" style="padding:8px"><i class="fas fa-trash me-2"></i>Datos eliminados de ${station}</span>`;
+      setTimeout(() => msg.innerHTML = '', 3000);
     }
-    
+
     document.getElementById('manual-station').addEventListener('change', (e) => {
-       const select = e.target;
-       const groupLabel = select.options[select.selectedIndex].parentNode.label;
-       const unitSpan = document.getElementById('manual-unit');
-       let currentUnit = '';
-       if(groupLabel === 'Calidad de Aire') currentUnit = 'µg/m³';
-       else if(groupLabel === 'Hidrológica (Clima)') currentUnit = '°C';
-       else if(groupLabel === 'Calidad de Agua') currentUnit = 'pH';
-       unitSpan.innerText = currentUnit;
+      const select = e.target;
+      const groupLabel = select.options[select.selectedIndex].parentNode.label;
+      const unitSpan = document.getElementById('manual-unit');
+      let currentUnit = '';
+      if (groupLabel === 'Calidad de Aire') currentUnit = 'µg/m³';
+      else if (groupLabel === 'Hidrológica (Clima)') currentUnit = '°C';
+      else if (groupLabel === 'Calidad de Agua') currentUnit = 'pH';
+      unitSpan.innerText = currentUnit;
 
-       const data = JSON.parse(localStorage.getItem('manualStationData') || '{}');
-       const st = data[e.target.value];
-       if(st) {
-           let val = st.indicator || '';
-           if(currentUnit) val = val.replace(' ' + currentUnit, '').replace(currentUnit, '');
-           document.getElementById('manual-indicator').value = val;
-           document.getElementById('manual-status').value = st.status || 'Estable';
+      const data = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+      const st = data[e.target.value];
+      if (st) {
+        let val = st.indicator || '';
+        if (currentUnit) val = val.replace(' ' + currentUnit, '').replace(currentUnit, '');
+        document.getElementById('manual-indicator').value = val;
+        document.getElementById('manual-status').value = st.status || 'Estable';
 
-           if(st.allData) {
-               document.getElementById('manual-pm2_5').value = st.allData.pm2_5 || '';
-               document.getElementById('manual-tem').value = st.allData.tem || '';
-               document.getElementById('manual-hum').value = st.allData.hum || '';
-               document.getElementById('manual-vel').value = st.allData.vel || '';
-           } else {
-               document.getElementById('manual-pm2_5').value = '';
-               document.getElementById('manual-tem').value = '';
-               document.getElementById('manual-hum').value = '';
-               document.getElementById('manual-vel').value = '';
-           }
-       } else {
-           document.getElementById('manual-indicator').value = '';
-           document.getElementById('manual-status').value = 'Estable';
-           document.getElementById('manual-pm2_5').value = '';
-           document.getElementById('manual-tem').value = '';
-           document.getElementById('manual-hum').value = '';
-           document.getElementById('manual-vel').value = '';
-       }
+        if (st.allData) {
+          document.getElementById('manual-pm2_5').value = st.allData.pm2_5 || '';
+          document.getElementById('manual-tem').value = st.allData.tem || '';
+          document.getElementById('manual-hum').value = st.allData.hum || '';
+          document.getElementById('manual-vel').value = st.allData.vel || '';
+        } else {
+          document.getElementById('manual-pm2_5').value = '';
+          document.getElementById('manual-tem').value = '';
+          document.getElementById('manual-hum').value = '';
+          document.getElementById('manual-vel').value = '';
+        }
+      } else {
+        document.getElementById('manual-indicator').value = '';
+        document.getElementById('manual-status').value = 'Estable';
+        document.getElementById('manual-pm2_5').value = '';
+        document.getElementById('manual-tem').value = '';
+        document.getElementById('manual-hum').value = '';
+        document.getElementById('manual-vel').value = '';
+      }
     });
 
     // Invoke change to populate inputs initially
     setTimeout(() => {
-        const ev = new Event('change');
-        document.getElementById('manual-station').dispatchEvent(ev);
+      const ev = new Event('change');
+      document.getElementById('manual-station').dispatchEvent(ev);
     }, 500);
 
     // Restore session
@@ -936,87 +1174,87 @@
     let LAST_PARSED_DATA = null;
 
     function initUploadLogic() {
-        const dropZone = document.getElementById('drop-zone-admin');
-        const input = document.getElementById('file-upload-input');
+      const dropZone = document.getElementById('drop-zone-admin');
+      const input = document.getElementById('file-upload-input');
 
-        if(!dropZone) return;
+      if (!dropZone) return;
 
-        dropZone.onclick = () => input.click();
-        
-        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent)'; };
-        dropZone.ondragleave = () => { dropZone.style.borderColor = 'var(--border-glow)'; };
-        dropZone.ondrop = (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = 'var(--border-glow)';
-            if(e.dataTransfer.files.length) handleUploadedFile(e.dataTransfer.files[0]);
-        };
+      dropZone.onclick = () => input.click();
 
-        input.onchange = (e) => {
-            if(e.target.files.length) handleUploadedFile(e.target.files[0]);
-        };
+      dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent)'; };
+      dropZone.ondragleave = () => { dropZone.style.borderColor = 'var(--border-glow)'; };
+      dropZone.ondrop = (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--border-glow)';
+        if (e.dataTransfer.files.length) handleUploadedFile(e.dataTransfer.files[0]);
+      };
+
+      input.onchange = (e) => {
+        if (e.target.files.length) handleUploadedFile(e.target.files[0]);
+      };
     }
 
     function handleUploadedFile(file) {
-        console.log("📂 File detected:", file.name);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
-            parseFlatFile(content);
-            // Reset input so the same file can be uploaded again
-            document.getElementById('file-upload-input').value = '';
-        };
-        reader.readAsText(file);
+      console.log("📂 File detected:", file.name);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target.result;
+        parseFlatFile(content);
+        // Reset input so the same file can be uploaded again
+        document.getElementById('file-upload-input').value = '';
+      };
+      reader.readAsText(file);
     }
 
     function parseFlatFile(text) {
-        const lines = text.trim().split(/\r?\n/).filter(l => l.trim() !== '');
-        if (lines.length < 2) {
-            console.error("File is too short or empty.");
-            return;
+      const lines = text.trim().split(/\r?\n/).filter(l => l.trim() !== '');
+      if (lines.length < 2) {
+        console.error("File is too short or empty.");
+        return;
+      }
+
+      // Intentar detectar separador (tab o comma)
+      let sep = '\t';
+      if (!lines[0].includes('\t') && lines[0].includes(',')) sep = ',';
+
+      const header = lines[0].split(sep).map(s => s.trim());
+      const lastDataLine = lines[lines.length - 1].split(sep).map(s => s.trim());
+
+      // Mapeo dinámico basado en nombres de columnas proporcionados por el usuario
+      const findVal = (names) => {
+        for (let name of names) {
+          const idx = header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+          if (idx !== -1) return lastDataLine[idx];
         }
+        return null;
+      };
 
-        // Intentar detectar separador (tab o comma)
-        let sep = '\t';
-        if (!lines[0].includes('\t') && lines[0].includes(',')) sep = ',';
+      const data = {
+        pm2_5: findVal(['PM2.5', 'alt. PM#5', 'PM25']),
+        pm10: findVal(['PM10']),
+        tem: findVal(['T', 'aux. T', 'Temperatue']),
+        hum: findVal(['rH', 'aux. h', 'humidity']),
+        vel: findVal(['wind speed', 'velocity', 'velocity avg'])
+      };
 
-        const header = lines[0].split(sep).map(s => s.trim());
-        const lastDataLine = lines[lines.length - 1].split(sep).map(s => s.trim());
-
-        // Mapeo dinámico basado en nombres de columnas proporcionados por el usuario
-        const findVal = (names) => {
-            for(let name of names) {
-                const idx = header.findIndex(h => h.toLowerCase() === name.toLowerCase());
-                if(idx !== -1) return lastDataLine[idx];
-            }
-            return null;
-        };
-
-        const data = {
-            pm2_5: findVal(['PM2.5', 'alt. PM#5', 'PM25']),
-            pm10: findVal(['PM10']),
-            tem:  findVal(['T', 'aux. T', 'Temperatue']),
-            hum:  findVal(['rH', 'aux. h', 'humidity']),
-            vel:  findVal(['wind speed', 'velocity', 'velocity avg'])
-        };
-
-        LAST_PARSED_DATA = data;
-        renderUploadPreview(data);
+      LAST_PARSED_DATA = data;
+      renderUploadPreview(data);
     }
 
     function renderUploadPreview(data) {
-        const preview = document.getElementById('upload-preview');
-        const container = document.getElementById('preview-data');
-        preview.classList.remove('d-none');
+      const preview = document.getElementById('upload-preview');
+      const container = document.getElementById('preview-data');
+      preview.classList.remove('d-none');
 
-        const items = [
-            { label: 'PM2.5', value: data.pm2_5, unit: 'µg/m³' },
-            { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
-            { label: 'Temperatura', value: data.tem, unit: '°C' },
-            { label: 'Humedad', value: data.hum, unit: '%' },
-            { label: 'Velocidad', value: data.vel, unit: 'm/s' }
-        ];
+      const items = [
+        { label: 'PM2.5', value: data.pm2_5, unit: 'µg/m³' },
+        { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
+        { label: 'Temperatura', value: data.tem, unit: '°C' },
+        { label: 'Humedad', value: data.hum, unit: '%' },
+        { label: 'Velocidad', value: data.vel, unit: 'm/s' }
+      ];
 
-        container.innerHTML = items.map(it => `
+      container.innerHTML = items.map(it => `
             <div class="col-4 mb-2">
                 <div class="p-2 border rounded text-center" style="background:rgba(255,255,255,0.05); border-color:var(--border-glow) !important;">
                     <div class="text-muted" style="font-size:0.6rem;">${it.label}</div>
@@ -1027,72 +1265,73 @@
     }
 
     function applyUploadedData() {
-        if(!LAST_PARSED_DATA) return;
-        
-        const select = document.getElementById('upload-station');
-        const station = select.value;
-        const groupLabel = select.options[select.selectedIndex].parentNode.label;
-        const msg = document.getElementById('upload-msg');
-        
-        let indicator = '';
-        let status = 'Estable';
+      if (!LAST_PARSED_DATA) return;
 
-        if (groupLabel === 'Calidad de Aire') {
-            const val = LAST_PARSED_DATA.pm2_5 || '0';
-            indicator = `${val} µg/m³`;
-            const nVal = parseFloat(val);
-            if(nVal > 35) status = 'Alerta';
-            else if(nVal > 12) status = 'Precaución';
-        } else {
-            const val = LAST_PARSED_DATA.tem || '0';
-            indicator = `${val} °C`;
-            const nVal = parseFloat(val);
-            if(nVal > 38) status = 'Alerta';
-            else if(nVal > 33) status = 'Precaución';
-        }
+      const select = document.getElementById('upload-station');
+      const station = select.value;
+      const groupLabel = select.options[select.selectedIndex].parentNode.label;
+      const msg = document.getElementById('upload-msg');
 
-        let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
-        manualData[station] = { 
-            indicator, 
-            status, 
-            timestamp: new Date().toISOString(),
-            allData: LAST_PARSED_DATA
-        };
+      let indicator = '';
+      let status = 'Estable';
 
-        localStorage.setItem('manualStationData', JSON.stringify(manualData));
-        syncManualDataToServer();
+      if (groupLabel === 'Calidad de Aire') {
+        const val = LAST_PARSED_DATA.pm2_5 || '0';
+        indicator = `${val} µg/m³`;
+        const nVal = parseFloat(val);
+        if (nVal > 35) status = 'Alerta';
+        else if (nVal > 12) status = 'Precaución';
+      } else {
+        const val = LAST_PARSED_DATA.tem || '0';
+        indicator = `${val} °C`;
+        const nVal = parseFloat(val);
+        if (nVal > 38) status = 'Alerta';
+        else if (nVal > 33) status = 'Precaución';
+      }
 
-        msg.innerHTML = `<span class="badge bg-success" style="padding:10px"><i class="fas fa-check-circle me-2"></i>Archivo procesado. Datos inyectados a ${station}</span>`;
-        document.getElementById('upload-preview').classList.add('d-none');
-        
-        // Notificar al dashboard principal (vía storage event)
-        window.dispatchEvent(new Event('storage'));
-        
-        setTimeout(() => msg.innerHTML = '', 4000);
+      let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+      manualData[station] = {
+        indicator,
+        status,
+        timestamp: new Date().toISOString(),
+        allData: LAST_PARSED_DATA
+      };
+
+      localStorage.setItem('manualStationData', JSON.stringify(manualData));
+      syncManualDataToServer();
+
+      msg.innerHTML = `<span class="badge bg-success" style="padding:10px"><i class="fas fa-check-circle me-2"></i>Archivo procesado. Datos inyectados a ${station}</span>`;
+      document.getElementById('upload-preview').classList.add('d-none');
+
+      // Notificar al dashboard principal (vía storage event)
+      window.dispatchEvent(new Event('storage'));
+
+      setTimeout(() => msg.innerHTML = '', 4000);
     }
     // Configuración del Dashboard
     function updateDashboardConfig() {
-        const showModel = document.getElementById('toggle-show-model').checked;
-        const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
-        config.showPredictiveModel = showModel;
-        localStorage.setItem('dashboardConfig', JSON.stringify(config));
-        
-        const msg = document.getElementById('config-msg');
-        msg.innerHTML = `<span class="badge bg-info" style="padding:10px"><i class="fas fa-save me-2"></i>Preferencia guardada. Actualiza el Dashboard para ver el cambio.</span>`;
-        
-        // Notificar al dashboard principal
-        window.dispatchEvent(new Event('storage'));
-        
-        setTimeout(() => msg.innerHTML = '', 3000);
+      const showModel = document.getElementById('toggle-show-model').checked;
+      const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
+      config.showPredictiveModel = showModel;
+      localStorage.setItem('dashboardConfig', JSON.stringify(config));
+
+      const msg = document.getElementById('config-msg');
+      msg.innerHTML = `<span class="badge bg-info" style="padding:10px"><i class="fas fa-save me-2"></i>Preferencia guardada. Actualiza el Dashboard para ver el cambio.</span>`;
+
+      // Notificar al dashboard principal
+      window.dispatchEvent(new Event('storage'));
+
+      setTimeout(() => msg.innerHTML = '', 3000);
     }
 
     function loadDashboardConfig() {
-        const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
-        const toggle = document.getElementById('toggle-show-model');
-        if(toggle) toggle.checked = !!config.showPredictiveModel;
+      const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
+      const toggle = document.getElementById('toggle-show-model');
+      if (toggle) toggle.checked = !!config.showPredictiveModel;
     }
 
     window.addEventListener('load', loadDashboardConfig);
   </script>
 </body>
+
 </html>
