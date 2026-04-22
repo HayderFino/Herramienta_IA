@@ -18,10 +18,10 @@ class DataPanel {
         const config = [
             { label: 'Temperatura', value: `${Math.round(main.temp)}°C`, icon: 'fa-temperature-high', color: 'text-danger' },
             { label: 'Humedad', value: `${main.humidity}%`, icon: 'fa-tint', color: 'text-info' },
-            { label: 'Sensación', value: `${Math.round(main.feels_like)}°C`, icon: 'fa-thermometer-half', color: 'text-warning' },
             { label: 'Viento', value: `${wind.speed} km/h`, icon: 'fa-wind', color: 'text-white' },
-            { label: 'IQA', value: this.getAQILabel(aqi), icon: 'fa-lungs', color: this.getAQIColor(aqi) },
-            { label: 'PM2.5', value: `${pm2_5} µg/m³`, icon: 'fa-smog', color: 'text-muted' }
+            { label: 'PM10', value: `${airQuality.list[0].components.pm10} µg/m³`, icon: 'fa-smog', color: 'text-warning' },
+            { label: 'PM2.5', value: `${airQuality.list[0].components.pm2_5} µg/m³`, icon: 'fa-smog', color: 'text-muted' },
+            { label: 'IQA', value: this.getAQILabel(aqi), icon: 'fa-lungs', color: this.getAQIColor(aqi) }
         ];
 
         this.container.innerHTML = config.map(item => `

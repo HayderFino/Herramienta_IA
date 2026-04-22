@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=10.0_compact">
+    <link rel="stylesheet" href="css/styles.css?v=11.0_fresh">
 </head>
 
 <body>
@@ -34,25 +34,57 @@
                     <input type="radio" class="btn-check" name="layerBtn" id="layerAire">
                     <label class="btn btn-outline-info" for="layerAire"><i class="fas fa-wind me-2"></i>Calidad del
                         Aire</label>
-                    <input type="radio" class="btn-check" name="layerBtn" id="layerAgua">
-                    <label class="btn btn-outline-secondary" for="layerAgua"><i class="fas fa-water me-2"></i>Calidad
-                        del Agua</label>
                 </div>
             </div>
             <div class="user-actions d-flex gap-2 align-items-center">
                 <button class="btn btn-primary" id="refresh-btn"><i class="fas fa-sync-alt me-2"></i>Actualizar</button>
-                <a href="admin/index.html" class="btn btn-outline-warning" id="admin-btn" title="Panel de Administración">
+                <a href="admin/index.html" class="btn btn-outline-warning" id="admin-btn"
+                    title="Panel de Administración">
                     <i class="fas fa-shield-halved me-2"></i>Admin
                 </a>
             </div>
         </header>
+
+        <!-- Global Metrics Bar (NEW) -->
+        <div class="row mx-4 mt-3 mb-2 g-3">
+            <div class="col-md-4">
+                <div class="card glass shadow-sm mb-0 p-2 d-flex flex-row align-items-center gap-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary"><i
+                            class="fas fa-chart-line"></i></div>
+                    <div>
+                        <div class="small-label">Promedio General</div>
+                        <h4 class="mb-0 fw-bold" id="global-avg-val">--</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass shadow-sm mb-0 p-2 d-flex flex-row align-items-center gap-3">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning"><i
+                            class="fas fa-exclamation-triangle"></i></div>
+                    <div>
+                        <div class="small-label">Estaciones en Alerta</div>
+                        <h4 class="mb-0 fw-bold" id="global-alert-count">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass shadow-sm mb-0 p-2 d-flex flex-row align-items-center gap-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success" id="global-status-icon"><i
+                            class="fas fa-check-circle"></i></div>
+                    <div>
+                        <div class="small-label">Estado del Sistema</div>
+                        <div id="global-status-text" class="text-success fw-bold">Verificando...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Content -->
         <main class="dashboard-content mt-4">
             <div class="container-fluid">
                 <div class="row">
                     <!-- Left Column: Map -->
-                    <div class="col-lg-8 mb-4">
+                    <div class="col-lg-12 mb-4" id="col-main">
                         <div class="card glass">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Mapa de Monitoreo</h5>
@@ -73,15 +105,19 @@
                                 <div class="map-overlay-legend glass" id="map-legend">
                                     <h6>Índice de Calidad del Aire (ICA)</h6>
                                     <div class="legend-items">
-                                        <div class="legend-item"><span class="color-box good"></span> <strong>BUENO</strong> 0-25</div>
-                                        <div class="legend-item"><span class="color-box moderate"></span> <strong>MODERADO</strong> 26-50</div>
-                                        <div class="legend-item"><span class="color-box unhealthy"></span> <strong>DAÑINO</strong> 51-75</div>
-                                        <div class="legend-item"><span class="color-box danger"></span> <strong>PELIGROSO</strong> >75</div>
+                                        <div class="legend-item"><span class="color-box good"></span>
+                                            <strong>BUENO</strong> 0-25</div>
+                                        <div class="legend-item"><span class="color-box moderate"></span>
+                                            <strong>MODERADO</strong> 26-50</div>
+                                        <div class="legend-item"><span class="color-box unhealthy"></span>
+                                            <strong>DAÑINO</strong> 51-75</div>
+                                        <div class="legend-item"><span class="color-box danger"></span>
+                                            <strong>PELIGROSO</strong> >75</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Station Cards Container (Below Map) -->
                         <div class="row mt-3" id="station-cards-container">
                             <!-- Cards were dynamically generated by mapComponent -->
@@ -89,7 +125,7 @@
                     </div>
 
                     <!-- Right Column: Prediction -->
-                    <div class="col-lg-4 mb-4">
+                    <div class="col-lg-4 mb-4 d-none" id="col-side">
                         <!-- File Upload Card (NEW) -->
                         <div class="card mb-4 glass">
                             <div class="card-header">
@@ -183,7 +219,7 @@
         </main>
 
         <footer class="text-center py-3 text-muted">
-            <small>&copy; 2026 Sistema de Monitoreo Ambiental Barrancabermeja | Powered by OpenWeather & AI Model |
+            <small>&copy; 2026 Sistema de Monitoreo Ambiental Barrancabermeja |
                 <span class="hfino-signature">Hfino</span></small>
         </footer>
     </div>
@@ -194,7 +230,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- App Scripts -->
-    <script type="module" src="js/main.js?v=5.0"></script>
+    <script type="module" src="js/main.js?v=6.2"></script>
 </body>
 
 </html>

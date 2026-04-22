@@ -3,12 +3,12 @@
  * App Orchestrator for the Environmental Dashboard.
  */
 
-import { weatherService } from './services/weatherService.js';
-import { predictionService } from './services/predictionService.js';
-import { mapComponent } from './components/mapComponent.js?v=5.0';
-import { dataPanel } from './components/dataPanel.js';
-import { predictionPanel } from './components/predictionPanel.js';
-import { recommendationPanel } from './components/recommendationPanel.js';
+import { weatherService } from './services/weatherService.js?v=6.0';
+import { predictionService } from './services/predictionService.js?v=6.0';
+import { mapComponent } from './components/mapComponent.js?v=6.1';
+import { dataPanel } from './components/dataPanel.js?v=6.0';
+import { predictionPanel } from './components/predictionPanel.js?v=6.0';
+import { recommendationPanel } from './components/recommendationPanel.js?v=6.0';
 
 class App {
     async init() {
@@ -20,8 +20,40 @@ class App {
         // 2. Load Initial Data
         await this.refreshData();
 
-        // 3. Setup Listeners
+        // 3. Apply Configuration
+        this.applyDashboardConfig();
+
+        // 4. Setup Listeners
         this.setupEventListeners();
+    }
+
+    applyDashboardConfig() {
+        const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
+        const colMain = document.getElementById('col-main');
+        const colSide = document.getElementById('col-side');
+
+        if (colMain && colSide) {
+            // Ahora la lógica es INVERSA: Se muestra solo si 'showPredictiveModel' es true.
+            // Si es undefined o false, se oculta (oculto por defecto).
+            if (config.showPredictiveModel === true) {
+                console.log('👁 showing side-view (Prediction Model)');
+                colSide.classList.remove('d-none');
+                colMain.classList.remove('col-lg-12');
+                colMain.classList.add('col-lg-8');
+            } else {
+                console.log('🙈 Hiding side-view (Prediction Model) by default');
+                colSide.classList.add('d-none');
+                colMain.classList.remove('col-lg-8');
+                colMain.classList.add('col-lg-12');
+            }
+            
+            // Re-render map and markers to adjust to new container size
+            if(mapComponent.map) {
+                setTimeout(() => {
+                    mapComponent.map.invalidateSize();
+                }, 300);
+            }
+        }
     }
 
     async refreshData() {
@@ -54,7 +86,7 @@ class App {
         }
 
         // Layer Switches
-        const layers = ['Clima', 'Aire', 'Agua'];
+        const layers = ['Clima', 'Aire'];
         layers.forEach(l => {
             const btn = document.getElementById(`layer${l}`);
             if (btn) {
@@ -74,6 +106,13 @@ class App {
             });
         }
 
+        // Listen to storage changes (for admin panel config)
+        window.addEventListener('storage', () => {
+            console.log('🔄 Dashboard: Detectado cambio en localStorage, aplicando config...');
+            this.applyDashboardConfig();
+            this.refreshData(); // Refresh metrics just in case
+        });
+
         // File Selection (NEW)
         this.setupUploadListener();
     }
@@ -91,7 +130,7 @@ class App {
                 
                 const result = await predictionService.uploadFile(file);
                 
-                if (result.success || result.data) {
+                if (result.success) {
                     // Update prediction panel with new data
                     predictionPanel.render({
                         labels: result.labels || ['1', '2', '3', '4', '5', '6'],
@@ -99,14 +138,17 @@ class App {
                         futureTrend: result.futureTrend || 'Datos procesados del archivo'
                     });
 
-                    // NEW: Update recommendations based on ML Analysis
+                    // Update recommendations based on ML Analysis
                     const weather = await weatherService.getCurrentWeather();
                     const airQuality = await weatherService.getAirQuality();
                     recommendationPanel.render(weather, airQuality, result.recommendations);
+                    
+                    alert(`Archivo "${file.name}" procesado con éxito por el modelo.`);
+                } else {
+                    alert(result.message || 'Error al procesar el archivo.');
                 }
                 
                 uploadStatus.classList.add('d-none');
-                alert(`Archivo "${file.name}" procesado con éxito por el modelo.`);
             });
         }
     }

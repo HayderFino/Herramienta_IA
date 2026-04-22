@@ -406,8 +406,11 @@
         <button class="admin-tab" onclick="switchTab('tab-api',this)">
           <i class="fas fa-plug me-1"></i>Estado API
         </button>
-        <button class="admin-tab" onclick="switchTab('tab-manual',this)">
-          <i class="fas fa-edit me-1"></i>Ingreso Manual
+        <button class="admin-tab" onclick="switchTab('tab-upload',this)">
+          <i class="fas fa-file-import me-1"></i>Carga Planos
+        </button>
+        <button class="admin-tab" onclick="switchTab('tab-config',this)">
+          <i class="fas fa-cog me-1"></i>Configuración
         </button>
       </div>
 
@@ -543,11 +546,6 @@
                     <option value="PIRMA-2 ENCINO">PIRMA-2 ENCINO</option>
                     <option value="PIRMA-1 CURITI">PIRMA-1 CURITI</option>
                   </optgroup>
-                  <optgroup label="Calidad de Agua">
-                    <option value="Piscícola San Silvestre S.A.">Piscícola San Silvestre S.A.</option>
-                    <option value="UNIPAZ">UNIPAZ</option>
-                    <option value="Aguas de Barrancabermeja – Cienaga San Silvestre">Aguas de Barrancabermeja – Cienaga San Silvestre</option>
-                  </optgroup>
                 </select>
               </div>
               
@@ -569,12 +567,104 @@
                 </select>
               </div>
 
+              <!-- Extra Variables for Manual Input -->
+              <div class="col-md-12 mt-3 p-3 rounded" style="background:rgba(255,255,255,0.02); border:1px solid var(--border-glow);">
+                <h6 class="small fw-bold text-muted mb-3"><i class="fas fa-list me-2"></i>Variables Detalladas (Opcional)</h6>
+                <div class="row g-2">
+                    <div class="col-2"><label class="small-label d-block text-center mb-1">PM5</label><input type="text" id="manual-pm5" class="form-control form-control-glass text-center" placeholder="--"></div>
+                    <div class="col-2"><label class="small-label d-block text-center mb-1">PM10</label><input type="text" id="manual-pm10" class="form-control form-control-glass text-center" placeholder="--"></div>
+                    <div class="col-2"><label class="small-label d-block text-center mb-1">TEM</label><input type="text" id="manual-tem" class="form-control form-control-glass text-center" placeholder="--"></div>
+                    <div class="col-3"><label class="small-label d-block text-center mb-1">HUM %</label><input type="text" id="manual-hum" class="form-control form-control-glass text-center" placeholder="--"></div>
+                    <div class="col-3"><label class="small-label d-block text-center mb-1">VEL m/s</label><input type="text" id="manual-vel" class="form-control form-control-glass text-center" placeholder="--"></div>
+                </div>
+              </div>
+
               <div class="col-md-12 mt-4 text-end">
                  <button class="btn btn-outline-danger me-2" onclick="clearManualData()">Limpiar Datos</button>
                  <button class="btn btn-primary" style="background:var(--accent);border:none;color:#111;font-weight:600;" onclick="saveManualData()"><i class="fas fa-save me-2"></i>Inyectar Datos</button>
               </div>
               <div class="col-md-12 mt-2" id="manual-msg"></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Upload Flat Files -->
+      <div class="tab-panel" id="tab-upload">
+        <div class="data-card">
+          <div class="data-card-header">
+            <h3><i class="fas fa-file-import" style="color:var(--accent)"></i>Carga de Archivos Planos (Aire)</h3>
+          </div>
+          <div class="data-card-body" style="padding:1.5rem;">
+            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Sube el archivo plano de la estación para extraer automáticamente el último registro.</p>
+            
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label small text-muted">Estación de Aire</label>
+                <select id="upload-station" class="form-select form-control-glass w-100" style="background:#111;">
+                  <optgroup label="Calidad de Aire">
+                    <option value="CAS Alcaldia">CAS Alcaldia</option>
+                    <option value="CAS Escuela San Silvestre">CAS Escuela San Silvestre</option>
+                    <option value="CAS-SUB Estacion Bomberos">CAS-SUB Estacion Bomberos</option>
+                    <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander</option>
+                  </optgroup>
+                  <optgroup label="Hidrológica (Clima)">
+                    <option value="PIRMA-3 HATO">PIRMA-3 HATO</option>
+                    <option value="PIRMA-2 ENCINO">PIRMA-2 ENCINO</option>
+                    <option value="PIRMA-1 CURITI">PIRMA-1 CURITI</option>
+                  </optgroup>
+                </select>
+              </div>
+              
+              <div class="col-md-12 mt-3">
+                <div id="drop-zone-admin" class="p-5 text-center border-dashed rounded" style="border: 2px dashed var(--border-glow); background: rgba(255,255,255,0.02); cursor: pointer;">
+                  <i class="fas fa-file-upload fa-3x mb-3 text-muted"></i>
+                  <p>Arrastra el archivo plano aquí o haz clic para seleccionar</p>
+                  <input type="file" id="file-upload-input" class="d-none" accept=".csv,.txt">
+                  <button class="btn btn-sm btn-outline-info" onclick="document.getElementById('file-upload-input').click()">Seleccionar Archivo</button>
+                </div>
+              </div>
+
+              <div id="upload-preview" class="col-md-12 mt-4 d-none">
+                <div class="p-3 rounded" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-glow);">
+                  <h6 class="small fw-bold mb-3" style="color:var(--accent)">Datos detectados (Último registro):</h6>
+                  <div class="row g-2 small" id="preview-data">
+                    <!-- filled by JS -->
+                  </div>
+                  <div class="text-end mt-3">
+                    <button class="btn btn-primary btn-sm" style="background:var(--accent); border:none; color:#111; font-weight:600;" onclick="applyUploadedData()">Confirmar e Inyectar</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-12 mt-2" id="upload-msg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Configuración Dashboard -->
+      <div class="tab-panel" id="tab-config">
+        <div class="data-card">
+          <div class="data-card-header">
+            <h3><i class="fas fa-cog" style="color:var(--accent)"></i>Preferencias de Visualización</h3>
+          </div>
+          <div class="data-card-body" style="padding:1.5rem;">
+            <p class="small text-muted mb-4"><i class="fas fa-info-circle me-1"></i>Personaliza cómo se muestra el dashboard principal.</p>
+            
+            <div class="row g-3 d-flex align-items-center">
+              <div class="col-8">
+                <h6 class="mb-1">Activar Modelo Predictivo (IA)</h6>
+                <p class="small text-muted mb-0">Muestra la columna derecha con el análisis de IA y recomendaciones. (Desactivado por defecto).</p>
+              </div>
+              <div class="col-4 text-end">
+                <div class="form-check form-switch d-inline-block">
+                  <input class="form-check-input" type="checkbox" id="toggle-show-model" style="width:3rem; height:1.5rem; cursor:pointer;" onchange="updateDashboardConfig()">
+                </div>
+              </div>
+            </div>
+            
+            <div id="config-msg" class="mt-3"></div>
           </div>
         </div>
       </div>
@@ -647,6 +737,7 @@
       document.getElementById('stat-users').textContent = CREDENTIALS.users.length;
       checkAPI();
       renderCSVList();
+      initUploadLogic();
     }
 
     // ─── CREDENTIALS RENDER ───────────────────────────────────────────────────
@@ -759,7 +850,18 @@
        let indicator = rawVal ? `${rawVal} ${unit}`.trim() : '';
 
        let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
-       manualData[station] = { indicator, status, timestamp: new Date().toISOString() };
+       manualData[station] = { 
+           indicator, 
+           status, 
+           timestamp: new Date().toISOString(),
+           allData: {
+               pm5: document.getElementById('manual-pm5').value,
+               pm10: document.getElementById('manual-pm10').value,
+               tem: document.getElementById('manual-tem').value,
+               hum: document.getElementById('manual-hum').value,
+               vel: document.getElementById('manual-vel').value
+           }
+       };
        localStorage.setItem('manualStationData', JSON.stringify(manualData));
        syncManualDataToServer();
        
@@ -777,6 +879,11 @@
        
        document.getElementById('manual-indicator').value = '';
        document.getElementById('manual-status').value = 'Estable';
+       document.getElementById('manual-pm5').value = '';
+       document.getElementById('manual-pm10').value = '';
+       document.getElementById('manual-tem').value = '';
+       document.getElementById('manual-hum').value = '';
+       document.getElementById('manual-vel').value = '';
        
        const msg = document.getElementById('manual-msg');
        msg.innerHTML = `<span class="badge bg-danger" style="padding:8px"><i class="fas fa-trash me-2"></i>Datos eliminados de ${station}</span>`;
@@ -800,9 +907,28 @@
            if(currentUnit) val = val.replace(' ' + currentUnit, '').replace(currentUnit, '');
            document.getElementById('manual-indicator').value = val;
            document.getElementById('manual-status').value = st.status || 'Estable';
+
+           if(st.allData) {
+               document.getElementById('manual-pm5').value = st.allData.pm5 || '';
+               document.getElementById('manual-pm10').value = st.allData.pm10 || '';
+               document.getElementById('manual-tem').value = st.allData.tem || '';
+               document.getElementById('manual-hum').value = st.allData.hum || '';
+               document.getElementById('manual-vel').value = st.allData.vel || '';
+           } else {
+               document.getElementById('manual-pm5').value = '';
+               document.getElementById('manual-pm10').value = '';
+               document.getElementById('manual-tem').value = '';
+               document.getElementById('manual-hum').value = '';
+               document.getElementById('manual-vel').value = '';
+           }
        } else {
            document.getElementById('manual-indicator').value = '';
            document.getElementById('manual-status').value = 'Estable';
+           document.getElementById('manual-pm5').value = '';
+           document.getElementById('manual-pm10').value = '';
+           document.getElementById('manual-tem').value = '';
+           document.getElementById('manual-hum').value = '';
+           document.getElementById('manual-vel').value = '';
        }
     });
 
@@ -822,6 +948,161 @@
       document.getElementById('topbar-user').innerHTML = `<i class="fas fa-user-shield me-1"></i>${u.username}`;
       loadCredentials().then(initPanel);
     }
+    // ─── UPLOAD LOGIC ────────────────────────────────────────────────────────
+    let LAST_PARSED_DATA = null;
+
+    function initUploadLogic() {
+        const dropZone = document.getElementById('drop-zone-admin');
+        const input = document.getElementById('file-upload-input');
+
+        if(!dropZone) return;
+
+        dropZone.onclick = () => input.click();
+        
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent)'; };
+        dropZone.ondragleave = () => { dropZone.style.borderColor = 'var(--border-glow)'; };
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-glow)';
+            if(e.dataTransfer.files.length) handleUploadedFile(e.dataTransfer.files[0]);
+        };
+
+        input.onchange = (e) => {
+            if(e.target.files.length) handleUploadedFile(e.target.files[0]);
+        };
+    }
+
+    function handleUploadedFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            parseFlatFile(content);
+        };
+        reader.readAsText(file);
+    }
+
+    function parseFlatFile(text) {
+        const lines = text.trim().split(/\r?\n/);
+        if (lines.length < 2) return;
+
+        // Intentar detectar separador (tab o comma)
+        let sep = '\t';
+        if (!lines[0].includes('\t') && lines[0].includes(',')) sep = ',';
+
+        const header = lines[0].split(sep).map(s => s.trim());
+        const lastDataLine = lines[lines.length - 1].split(sep).map(s => s.trim());
+
+        // Mapeo dinámico basado en nombres de columnas proporcionados por el usuario
+        const findVal = (names) => {
+            for(let name of names) {
+                const idx = header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+                if(idx !== -1) return lastDataLine[idx];
+            }
+            return null;
+        };
+
+        const data = {
+            pm5:  findVal(['PM2.5', 'alt. PM#5']),
+            pm10: findVal(['PM10']),
+            tem:  findVal(['T', 'aux. T']),
+            hum:  findVal(['rH', 'aux. h']),
+            vel:  findVal(['wind speed', 'velocity'])
+        };
+
+        LAST_PARSED_DATA = data;
+        renderUploadPreview(data);
+    }
+
+    function renderUploadPreview(data) {
+        const preview = document.getElementById('upload-preview');
+        const container = document.getElementById('preview-data');
+        preview.classList.remove('d-none');
+
+        const items = [
+            { label: 'PM2.5 (PM5)', value: data.pm5, unit: 'µg/m³' },
+            { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
+            { label: 'Temperatura', value: data.tem, unit: '°C' },
+            { label: 'Humedad', value: data.hum, unit: '%' },
+            { label: 'Velocidad', value: data.vel, unit: 'm/s' }
+        ];
+
+        container.innerHTML = items.map(it => `
+            <div class="col-4 mb-2">
+                <div class="p-2 border rounded text-center" style="background:rgba(255,255,255,0.05); border-color:var(--border-glow) !important;">
+                    <div class="text-muted" style="font-size:0.6rem;">${it.label}</div>
+                    <div class="fw-bold text-accent">${it.value || '--'} <small>${it.unit}</small></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function applyUploadedData() {
+        if(!LAST_PARSED_DATA) return;
+        
+        const select = document.getElementById('upload-station');
+        const station = select.value;
+        const groupLabel = select.options[select.selectedIndex].parentNode.label;
+        const msg = document.getElementById('upload-msg');
+        
+        let indicator = '';
+        let status = 'Estable';
+
+        if (groupLabel === 'Calidad de Aire') {
+            const val = LAST_PARSED_DATA.pm10 || LAST_PARSED_DATA.pm5 || '0';
+            indicator = `${val} µg/m³`;
+            const nVal = parseFloat(val);
+            if(nVal > 50) status = 'Alerta';
+            else if(nVal > 25) status = 'Precaución';
+        } else {
+            const val = LAST_PARSED_DATA.tem || '0';
+            indicator = `${val} °C`;
+            const nVal = parseFloat(val);
+            if(nVal > 38) status = 'Alerta';
+            else if(nVal > 33) status = 'Precaución';
+        }
+
+        let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
+        manualData[station] = { 
+            indicator, 
+            status, 
+            timestamp: new Date().toISOString(),
+            allData: LAST_PARSED_DATA
+        };
+
+        localStorage.setItem('manualStationData', JSON.stringify(manualData));
+        syncManualDataToServer();
+
+        msg.innerHTML = `<span class="badge bg-success" style="padding:10px"><i class="fas fa-check-circle me-2"></i>Archivo procesado. Datos inyectados a ${station}</span>`;
+        document.getElementById('upload-preview').classList.add('d-none');
+        
+        // Notificar al dashboard principal (vía storage event)
+        window.dispatchEvent(new Event('storage'));
+        
+        setTimeout(() => msg.innerHTML = '', 4000);
+    }
+    // Configuración del Dashboard
+    function updateDashboardConfig() {
+        const showModel = document.getElementById('toggle-show-model').checked;
+        const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
+        config.showPredictiveModel = showModel;
+        localStorage.setItem('dashboardConfig', JSON.stringify(config));
+        
+        const msg = document.getElementById('config-msg');
+        msg.innerHTML = `<span class="badge bg-info" style="padding:10px"><i class="fas fa-save me-2"></i>Preferencia guardada. Actualiza el Dashboard para ver el cambio.</span>`;
+        
+        // Notificar al dashboard principal
+        window.dispatchEvent(new Event('storage'));
+        
+        setTimeout(() => msg.innerHTML = '', 3000);
+    }
+
+    function loadDashboardConfig() {
+        const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
+        const toggle = document.getElementById('toggle-show-model');
+        if(toggle) toggle.checked = !!config.showPredictiveModel;
+    }
+
+    window.addEventListener('load', loadDashboardConfig);
   </script>
 </body>
 </html>
