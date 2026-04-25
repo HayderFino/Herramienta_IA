@@ -160,17 +160,6 @@ class MapComponent {
         return 'status-neutral';
     }
 
-    _formatVal(name, value) {
-        if (!value || value === '--') return '--';
-        const val = parseFloat(value);
-        if (isNaN(val)) return value;
-        
-        if (name === 'hum') return Math.round(val).toString();
-        
-        // Max 2 decimals
-        return Number(val.toFixed(2)).toString();
-    }
-
     _updateGlobalStats(layerName) {
         const manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
         const stations = this.stations[layerName] || [];
@@ -358,12 +347,8 @@ class MapComponent {
                 indicator = override.indicator || '--';
                 status = override.status;
             } else {
-                indicator = (this.currentLayer === 'aire') ? '15' : '28';
+                indicator = (this.currentLayer === 'aire') ? '15 µg/m³' : (this.currentLayer === 'clima' ? '28 °C' : '7.0 pH');
             }
-
-            // Aplicamos formato al indicador principal (solo valor, la unidad va después)
-            indicator = this._formatVal(this.currentLayer === 'aire' ? 'pm2_5' : 'tem', indicator);
-            const displayIndicator = (this.currentLayer === 'aire') ? `${indicator} µg/m³` : `${indicator} °C`;
 
             let statusColor = this._getColorForValue(this.currentLayer, indicator, style.color);
             if (override && override.status === 'Offline') statusColor = '#6c757d';
@@ -384,10 +369,10 @@ class MapComponent {
                     extraInfo = `
                         <div class="variables-grid mt-2 mb-3">
                             <div class="row g-2 text-center">
-                                <div class="col-8"><div class="var-box ${this._getVarStatus('pm2_5', d.pm2_5)}"><span>PM2.5</span><strong>${this._formatVal('pm2_5', d.pm2_5)}</strong></div></div>
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${this._formatVal('tem', d.tem)}°</strong></div></div>
-                                <div class="col-6"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${this._formatVal('hum', d.hum)}%</strong></div></div>
-                                <div class="col-6"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${this._formatVal('vel', d.vel)} <small>m/s</small></strong></div></div>
+                                <div class="col-8"><div class="var-box ${this._getVarStatus('pm2_5', d.pm2_5)}"><span>PM2.5</span><strong>${d.pm2_5 || '--'}</strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${d.tem || '--'}°</strong></div></div>
+                                <div class="col-6"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${d.hum || '--'}%</strong></div></div>
+                                <div class="col-6"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${d.vel || '--'} <small>m/s</small></strong></div></div>
                             </div>
                         </div>
                     `;
@@ -395,7 +380,7 @@ class MapComponent {
                     extraInfo = `
                         <div class="variables-grid mt-2 mb-3">
                             <div class="row g-2 text-center">
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><int>${d.tem || '--'}°</int></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${d.tem || '--'}°</strong></div></div>
                                 <div class="col-4"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${d.hum || '--'}%</strong></div></div>
                                 <div class="col-4"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${d.vel || '--'} <small>m/s</small></strong></div></div>
                             </div>
@@ -405,7 +390,7 @@ class MapComponent {
             }
 
             return `
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="">
                     <div class="card glass h-100 border-0" style="border-top: 4px solid ${statusColor} !important;">
                         <div class="card-body p-3 d-flex flex-column">
                             <div class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:0.7rem;">${station.type}</div>
@@ -417,7 +402,7 @@ class MapComponent {
                                 <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; border: 1px solid ${statusColor}40;">
                                     <i class="fas ${style.icon} me-1"></i> ${status}
                                 </span>
-                                <span class="fw-bold fs-5" style="color:${statusColor}">${displayIndicator}</span>
+                                <span class="fw-bold fs-5" style="color:${statusColor}">${indicator}</span>
                             </div>
                         </div>
                     </div>
