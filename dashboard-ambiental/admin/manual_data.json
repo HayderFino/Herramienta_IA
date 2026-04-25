@@ -1,0 +1,38 @@
+{
+  "CAS Escuela San Silvestre": {
+    "indicator": "3.497812 µg/m³",
+    "status": "Estable",
+    "timestamp": "2026-04-25T02:24:23.883Z",
+    "allData": {
+      "pm2_5": "3.497812",
+      "pm10": "9.974107",
+      "tem": "25.435077",
+      "hum": "94.026825",
+      "vel": "270.0041"
+    }
+  },
+  "CAS Alcaldia": {
+    "indicator": "12.2 µg/m³",
+    "status": "Precaución",
+    "timestamp": "2026-04-25T02:47:31.083Z",
+    "allData": {
+      "pm2_5": "12.2",
+      "pm10": "23.4",
+      "tem": "33",
+      "hum": "58",
+      "vel": null
+    }
+  },
+  "CAS Universidad Industrial de Santander": {
+    "indicator": "3.497812 µg/m³",
+    "status": "Estable",
+    "timestamp": "2026-04-25T02:47:55.007Z",
+    "allData": {
+      "pm2_5": "3.497812",
+      "pm10": "2.420550",
+      "tem": "25.435077",
+      "hum": "25.435077",
+      "vel": "1003.502747"
+    }
+  }
+}

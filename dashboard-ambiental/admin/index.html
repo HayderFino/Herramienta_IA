@@ -60,6 +60,7 @@
       z-index: 9999;
       backdrop-filter: blur(20px);
       background: rgba(10, 15, 30, 0.92);
+      transition: opacity 0.3s ease;
     }
 
     .login-card {
@@ -495,6 +496,26 @@
       }
     }
 
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-8px);
+      }
+
+      50% {
+        transform: translateX(8px);
+      }
+
+      75% {
+        transform: translateX(-4px);
+      }
+    }
+
     .admin-content {
       animation: fadeInUp .4s ease;
     }
@@ -908,10 +929,13 @@
 
     async function loadCredentials() {
       try {
-        const r = await fetch('credentials.json');
+        // Usamos cache-busting para evitar que el navegador guarde una versión vieja del JSON
+        const r = await fetch('credentials.json?t=' + Date.now());
+        if (!r.ok) throw new Error("No se pudo cargar el archivo");
         CREDENTIALS = await r.json();
         renderCredentials();
       } catch (e) {
+        console.warn("Usando credenciales por defecto", e);
         CREDENTIALS = { users: [{ username: 'Admin', password: '1234', role: 'administrator', created: '2026-04-13' }] };
         renderCredentials();
       }
@@ -919,25 +943,43 @@
 
     // ─── LOGIN ───────────────────────────────────────────────────────────────
     async function doLogin() {
+      const btn = document.getElementById('btn-login');
+      const err = document.getElementById('login-error');
+
+      // Feedback visual de carga
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i>Verificando...';
+      btn.disabled = true;
+
       if (!CREDENTIALS) await loadCredentials();
 
       const u = document.getElementById('inp-user').value.trim();
       const p = document.getElementById('inp-pass').value.trim();
-      const err = document.getElementById('login-error');
 
-      const match = CREDENTIALS.users.find(x => x.username === u && x.password === p);
+      // Busqueda insensible a mayúsculas para el usuario
+      const match = CREDENTIALS.users.find(x =>
+        x.username.toLowerCase() === u.toLowerCase() &&
+        x.password === p
+      );
 
       if (match) {
         err.style.display = 'none';
         sessionStorage.setItem('admin_user', JSON.stringify(match));
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('admin-panel').style.display = 'block';
-        document.getElementById('topbar-user').innerHTML = `<i class="fas fa-user-shield me-1"></i>${match.username}`;
-        initPanel();
+
+        // Transición suave al panel
+        document.getElementById('login-overlay').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('login-overlay').style.display = 'none';
+          document.getElementById('admin-panel').style.display = 'block';
+          document.getElementById('topbar-user').innerHTML = `<i class="fas fa-user-shield me-1"></i>${match.username}`;
+          initPanel();
+        }, 300);
       } else {
         err.style.display = 'block';
-        document.getElementById('btn-login').style.animation = 'shake .3s';
-        setTimeout(() => document.getElementById('btn-login').style.animation = '', 400);
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+        btn.style.animation = 'shake .4s ease-in-out';
+        setTimeout(() => btn.style.animation = '', 450);
       }
     }
 
@@ -1207,34 +1249,80 @@
     }
 
     function parseFlatFile(text) {
-      const lines = text.trim().split(/\r?\n/).filter(l => l.trim() !== '');
-      if (lines.length < 2) {
-        console.error("File is too short or empty.");
+      // 1. Limpiar líneas y filtrar vacías
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return;
+
+      // 2. Detectar separador
+      const sample = lines.slice(0, 5).join('\n');
+      let sep = '\t';
+      if (sample.includes(';')) sep = ';';
+      else if (sample.includes(',')) sep = ',';
+
+      console.log("🔍 Separador:", sep === '\t' ? 'TAB' : sep);
+
+      // 3. Limpiar nombres de columnas
+      const slug = (s) => s.replace(/"/g, '').replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+      // 4. Encontrar fila de cabeceras (la que tenga más coincidencias de palabras clave)
+      let headerIdx = -1;
+      let maxMatches = 0;
+      const keywords = ['pm10', 'pm2', 'temp', 'hum', 'hora', 'fecha', 'vel'];
+
+      for (let i = 0; i < Math.min(lines.length, 15); i++) {
+        const row = lines[i].toLowerCase();
+        let matches = 0;
+        // Evitamos falsos positivos como "perfil horario"
+        if (row.includes('perfil') && i < 2) continue;
+
+        keywords.forEach(k => { if (row.includes(k)) matches++; });
+
+        if (matches > maxMatches) {
+          maxMatches = matches;
+          headerIdx = i;
+        }
+      }
+      if (headerIdx === -1) headerIdx = 0;
+
+      const rawHeader = lines[headerIdx].split(sep);
+      const header = rawHeader.map(slug);
+      const colCount = header.length;
+
+      // 5. Encontrar la ÚLTIMA línea que parezca tener datos reales
+      let lastDataLine = null;
+      for (let i = lines.length - 1; i > headerIdx; i--) {
+        const cells = lines[i].split(sep).map(s => s.replace(/"/g, '').trim().replace(',', '.'));
+        // Si tiene el mismo número de columnas y al menos una celda es numérica
+        if (cells.length >= colCount - 1 && cells.some(c => !isNaN(parseFloat(c)))) {
+          lastDataLine = cells;
+          break;
+        }
+      }
+
+      if (!lastDataLine) {
+        console.error("❌ No se encontró una línea de datos válida.");
         return;
       }
 
-      // Intentar detectar separador (tab o comma)
-      let sep = '\t';
-      if (!lines[0].includes('\t') && lines[0].includes(',')) sep = ',';
+      console.log("📊 Cabeceras:", header);
+      console.log("📦 Datos:", lastDataLine);
 
-      const header = lines[0].split(sep).map(s => s.trim());
-      const lastDataLine = lines[lines.length - 1].split(sep).map(s => s.trim());
-
-      // Mapeo dinámico basado en nombres de columnas proporcionados por el usuario
-      const findVal = (names) => {
-        for (let name of names) {
-          const idx = header.findIndex(h => h.toLowerCase() === name.toLowerCase());
-          if (idx !== -1) return lastDataLine[idx];
+      // 6. Mapeo ultra-flexible
+      const get = (keys) => {
+        for (let key of keys) {
+          const target = slug(key);
+          const idx = header.findIndex(h => h === target || h.includes(target) || target.includes(h));
+          if (idx !== -1 && lastDataLine[idx]) return lastDataLine[idx];
         }
         return null;
       };
 
       const data = {
-        pm2_5: findVal(['PM2.5', 'alt. PM#5', 'PM25']),
-        pm10: findVal(['PM10']),
-        tem: findVal(['T', 'aux. T', 'Temperatue']),
-        hum: findVal(['rH', 'aux. h', 'humidity']),
-        vel: findVal(['wind speed', 'velocity', 'velocity avg'])
+        pm2_5: get(['pm25', 'pm2.5', 'altpm5']),
+        pm10: get(['pm10']),
+        tem: get(['temp', 'temperatura', 'auxt', 't']),
+        hum: get(['humedad', 'humidity', 'rh', 'auxh']),
+        vel: get(['windspeed', 'velocity', 'velocidad'])
       };
 
       LAST_PARSED_DATA = data;
