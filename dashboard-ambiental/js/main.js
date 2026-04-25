@@ -3,12 +3,12 @@
  * App Orchestrator for the Environmental Dashboard.
  */
 
-import { weatherService } from './services/weatherService.js?v=6.0';
-import { predictionService } from './services/predictionService.js?v=6.0';
-import { mapComponent } from './components/mapComponent.js?v=6.2';
-import { dataPanel } from './components/dataPanel.js?v=6.0';
-import { predictionPanel } from './components/predictionPanel.js?v=6.0';
-import { recommendationPanel } from './components/recommendationPanel.js?v=6.0';
+import { weatherService } from './services/weatherService.js?v=20260425';
+import { predictionService } from './services/predictionService.js?v=20260425';
+import { mapComponent } from './components/mapComponent.js?v=20260425';
+import { dataPanel } from './components/dataPanel.js?v=20260425';
+import { predictionPanel } from './components/predictionPanel.js?v=20260425';
+import { recommendationPanel } from './components/recommendationPanel.js?v=20260425';
 
 class App {
     async init() {
@@ -131,11 +131,13 @@ class App {
                 const result = await predictionService.uploadFile(file);
                 
                 if (result.success) {
-                    // Update prediction panel with new data
+                    // Update prediction panel with new data including units
                     predictionPanel.render({
                         labels: result.labels || ['1', '2', '3', '4', '5', '6'],
                         data: result.data || result.predictions,
-                        futureTrend: result.futureTrend || 'Datos procesados del archivo'
+                        futureTrend: result.futureTrend || 'Datos procesados del archivo',
+                        data_unit: result.data_unit,
+                        data_label: result.data_label
                     });
 
                     // Update recommendations based on ML Analysis

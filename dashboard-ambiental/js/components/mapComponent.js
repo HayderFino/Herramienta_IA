@@ -390,7 +390,7 @@ class MapComponent {
             }
 
             return `
-                <div class="">
+                <div class="col-md-6 col-lg-3">
                     <div class="card glass h-100 border-0" style="border-top: 4px solid ${statusColor} !important;">
                         <div class="card-body p-3 d-flex flex-column">
                             <div class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:0.7rem;">${station.type}</div>

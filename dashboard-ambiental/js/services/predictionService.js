@@ -6,7 +6,8 @@
 
 class PredictionService {
     constructor() {
-        this.apiUrl = 'http://localhost:8000/api/predict'; // Real endpoint for future ML integration
+        // En Laragon/Producción usamos el puente api.php para evitar problemas de CORS
+        this.apiUrl = 'api.php?route=predict'; 
     }
 
     async getPredictionTrend() {
@@ -17,11 +18,13 @@ class PredictionService {
         } catch (error) {
             console.warn('Real ML API not available, falling back to minimal local view.');
             return {
-                labels: ['1h', '2h', '3h', '4h', '5h', '6h'],
+                labels: ['Ahora', '+1h', '+2h', '+3h', '+4h', '+5h'],
                 data: [0, 0, 0, 0, 0, 0],
                 mainRisk: 'Sin Servicio',
                 probability: 0,
                 futureTrend: 'Servicio de análisis (api_bridge.py) no activo.',
+                data_unit: 'µg/m³',
+                data_label: 'PM2.5',
                 serviceOffline: true
             };
         }
@@ -32,7 +35,8 @@ class PredictionService {
         formData.append('file', file);
 
         try {
-            const response = await fetch(`${this.apiUrl}/upload`, {
+            // Usamos el parámetro route=upload para que api.php lo maneje
+            const response = await fetch(`api.php?route=upload`, {
                 method: 'POST',
                 body: formData
             });

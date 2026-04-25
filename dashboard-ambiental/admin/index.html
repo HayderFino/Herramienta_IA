@@ -1032,10 +1032,11 @@
       const box = document.getElementById('api-result');
       const pill = document.getElementById('api-status-pill');
       const stat = document.getElementById('stat-api');
-      box.textContent = 'Verificando conexión con localhost:8000…';
+      box.textContent = 'Verificando conexión con el Puente PHP y Motor IA…';
       try {
         const start = Date.now();
-        const r = await fetch('http://localhost:8000/health', { signal: AbortSignal.timeout(3000) });
+        // Llamamos a api.php que a su vez llama al bridge de Python
+        const r = await fetch('../api.php?route=health', { signal: AbortSignal.timeout(3000) });
         const ms = Date.now() - start;
         const data = await r.text();
         box.style.color = 'var(--success)';
@@ -1044,7 +1045,7 @@
         stat.textContent = 'Online';
       } catch (e) {
         box.style.color = 'var(--danger)';
-        box.textContent = `❌ API no disponible en localhost:8000\n\nPara iniciarla ejecuta:\n  python api_bridge.py\n\nError: ${e.message}`;
+        box.textContent = `❌ Motor IA no disponible a través del puente PHP.\n\nPara solucionarlo:\n1. Asegúrate de ejecutar: python api_bridge.py\n2. Verifica que Apache/PHP esté funcionando en Laragon.\n\nError: ${e.message}`;
         pill.className = 'pill pill-red'; pill.textContent = 'Offline';
         stat.textContent = 'Offline';
         document.getElementById('stat-records').textContent = '—';
@@ -1087,7 +1088,7 @@
     async function syncManualDataToServer() {
       const data = localStorage.getItem('manualStationData') || '{}';
       try {
-        await fetch('http://localhost:8000/api/manual_data', {
+        await fetch('../api.php?route=manual_data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: data
@@ -1097,7 +1098,7 @@
 
     async function loadManualDataFromServer() {
       try {
-        const r = await fetch('http://localhost:8000/api/manual_data?t=' + Date.now());
+        const r = await fetch('../api.php?route=manual_data&t=' + Date.now());
         if (r.ok) {
           const data = await r.json();
           localStorage.setItem('manualStationData', JSON.stringify(data));

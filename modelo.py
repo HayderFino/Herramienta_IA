@@ -652,8 +652,8 @@ def analizar_archivo(ruta_archivo: str) -> dict:
     avg_hum  = st_hum["mean"]  if all_hum  else 60.0
     avg_wvel = st_wvel["mean"] if all_wvel else 0.0
 
-    # 5 — Serie para predicción (PM2.5 preferido; fallback: temp)
-    serie_base = all_pm25 if len(all_pm25) >= 6 else all_temp
+    # 5 — Serie para predicción (Exclusivo PM2.5 por requerimiento)
+    serie_base = all_pm25 if len(all_pm25) >= 1 else [0.0]*12
     predicciones = _serie_prediccion(serie_base, n_pred=6)
 
     # 6 — Nivel de riesgo
@@ -699,13 +699,13 @@ def analizar_archivo(ruta_archivo: str) -> dict:
         "labels":        ["Ahora", "+1h", "+2h", "+3h", "+4h", "+5h"],
         "data":          predicciones,
         "data_unit":     "µg/m³",
-        "data_label":    "PM2.5 µg/m³",
+        "data_label":    "Calidad del Aire (PM2.5)",
         "valor_actual":  predicciones[0] if predicciones else round(avg_pm25, 2),
         "mainRisk":      riesgo,
         "futureTrend":   (
-            f"Proyección anclada en mediana {anchor_val} µg/m³ con tendencia "
-            f"de las últimas {n_ventana_used} muestras recientes. "
-            f"Basada en {n_base} registros de PM2.5."
+            f"Proyección de aire anclada en {anchor_val} µg/m³. "
+            f"Tendencia basada en las últimas {n_ventana_used} muestras. "
+            f"Total analizado: {n_base} registros de PM2.5."
         ),
         "analysis_note": nota,
         "recommendations": recs,

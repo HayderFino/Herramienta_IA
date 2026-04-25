@@ -12,15 +12,15 @@
     }
   },
   "CAS Alcaldia": {
-    "indicator": "12.2 µg/m³",
-    "status": "Precaución",
-    "timestamp": "2026-04-25T02:47:31.083Z",
+    "indicator": "3.497812 µg/m³",
+    "status": "Estable",
+    "timestamp": "2026-04-25T03:58:31.440Z",
     "allData": {
-      "pm2_5": "12.2",
-      "pm10": "23.4",
-      "tem": "33",
-      "hum": "58",
-      "vel": null
+      "pm2_5": "3.497812",
+      "pm10": "2.420550",
+      "tem": "25.435077",
+      "hum": "25.435077",
+      "vel": "1003.502747"
     }
   },
   "CAS Universidad Industrial de Santander": {
@@ -33,6 +33,18 @@
       "tem": "25.435077",
       "hum": "25.435077",
       "vel": "1003.502747"
+    }
+  },
+  "CAS-SUB Estacion Bomberos": {
+    "indicator": "25.9 µg/m³",
+    "status": "Precaución",
+    "timestamp": "2026-04-25T03:58:16.142Z",
+    "allData": {
+      "pm2_5": "25.9",
+      "pm10": "45.2",
+      "tem": "31.9",
+      "hum": "66",
+      "vel": null
     }
   }
 }

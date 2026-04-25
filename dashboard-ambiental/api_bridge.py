@@ -47,10 +47,12 @@ def _lote_mas_reciente() -> str | None:
 
 _FALLBACK = {
     "success": False,
-    "labels": ["1h", "2h", "3h", "4h", "5h", "6h"],
-    "data": [10.0, 10.2, 10.5, 10.4, 10.2, 10.0],
+    "labels": ["Ahora", "+1h", "+2h", "+3h", "+4h", "+5h"],
+    "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    "data_unit": "µg/m³",
+    "data_label": "PM2.5",
     "mainRisk": "Sin datos",
-    "futureTrend": "Inicia api_bridge.py y carga un archivo desde el panel.",
+    "futureTrend": "Inicia api_bridge.py y carga un archivo CSV/TXT desde el panel.",
     "analysis_note": "No se detectaron archivos de datos (CSV/TXT) en la carpeta del proyecto.",
     "recommendations": [],
     "stats": {

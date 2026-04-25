@@ -12,12 +12,21 @@ class PredictionPanel {
     render(prediction) {
         if (!this.ctx) return;
 
+        const unit = prediction.data_unit || 'µg/m³';
+        const label = prediction.data_label || 'PM2.5';
+        // Usamos el primer valor (Ahora) como el valor principal destacado
+        const currentValue = (prediction.data && prediction.data.length > 0) ? prediction.data[0] : 0;
+
         // Update Text Elements
         const mainRiskEl = document.getElementById('main-prediction-value');
         const trendMsgEl = document.getElementById('prediction-msg');
         
         if (mainRiskEl) {
-            mainRiskEl.innerHTML = `<div class="prediction-value text-gradient-purple">${prediction.data[prediction.data.length - 1]}°C</div>`;
+            mainRiskEl.innerHTML = `
+                <div class="prediction-value text-gradient-purple">
+                    <span class="fs-6 d-block text-muted uppercase fw-normal mb-1">${label} Actual</span>
+                    ${currentValue}<small class="fs-4 ms-1">${unit}</small>
+                </div>`;
         }
         
         if (trendMsgEl) {
@@ -34,7 +43,7 @@ class PredictionPanel {
             data: {
                 labels: prediction.labels,
                 datasets: [{
-                    label: 'Pronóstico Temperatura (°C)',
+                    label: `Pronóstico ${label} (${unit})`,
                     data: prediction.data,
                     borderColor: '#f5576c',
                     backgroundColor: 'rgba(245, 87, 108, 0.2)',
