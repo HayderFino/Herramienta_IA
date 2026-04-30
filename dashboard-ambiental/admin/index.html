@@ -20,8 +20,8 @@
       --danger: #fc8181;
       --success: #68d391;
       --warning: #f6c90e;
-      --text: #e2e8f0;
-      --muted: #718096;
+      --text: #ffffff;
+      --muted: #e2e8f0;
     }
 
     * {
@@ -116,9 +116,11 @@
     }
 
     .form-control-glass {
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(252, 252, 252, 0.12);
+      /* Aumentado de 0.07 para mejor contraste */
       border: 1px solid var(--border-glow);
-      color: var(--text);
+      color: #ffffff;
+      /* Blanco puro para máxima legibilidad */
       border-radius: 10px;
       padding: .75rem 1rem;
       font-family: 'Outfit', sans-serif;
@@ -128,9 +130,37 @@
     .form-control-glass:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, .15);
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text);
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, .25);
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+    }
+
+    /* Fix para opciones de select en temas oscuros */
+    select.form-control-glass option {
+      background-color: #1a202c;
+      color: #ffffff;
+    }
+
+    .input-group-text.form-control-glass {
+      background: rgba(99, 179, 237, 0.35); /* Más visible */
+      color: #ffffff;
+      font-weight: 600;
+      border-right: 1px solid var(--border-glow);
+    }
+
+    /* Forzar visibilidad en textos de ayuda y etiquetas */
+    .text-muted {
+      color: var(--muted) !important;
+      opacity: 0.9;
+    }
+
+    label.form-label, label.small-label, .small, .small-text {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    h6.text-muted, p.text-muted {
+      color: var(--muted) !important;
     }
 
     .btn-login {
@@ -365,9 +395,15 @@
     .data-card-header {
       padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--border-glow);
+      background: rgba(255, 255, 255, 0.03);
+      /* Fondo ligero para separar cabecera */
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    ::placeholder {
+      color: rgba(255, 255, 255, 0.45) !important;
     }
 
     .data-card-header h3 {
@@ -538,6 +574,19 @@
 </head>
 
 <body>
+  <script>
+    // 🛡️ SECURITY HANDSHAKE
+    (function() {
+      const handshake = sessionStorage.getItem('admin_access_handshake');
+      const isLoggedIn = sessionStorage.getItem('admin_user');
+      
+      if (!handshake && !isLoggedIn) {
+        document.documentElement.style.display = 'none';
+        alert('🚫 ACCESO INCORRECTO\nEstá intentando ingresar al panel administrativo de forma directa.\nPor seguridad, debe utilizar el botón "Admin" desde el Dashboard principal.');
+        window.location.href = '../index.html';
+      }
+    })();
+  </script>
 
   <!-- ═══════════════════════════════════════════
        LOGIN OVERLAY
@@ -637,6 +686,9 @@
         </button>
         <button class="admin-tab" onclick="switchTab('tab-upload',this)">
           <i class="fas fa-file-import me-1"></i>Carga Planos
+        </button>
+        <button class="admin-tab" onclick="switchTab('tab-weather-manual',this)">
+          <i class="fas fa-cloud-sun me-1"></i>Tiempo Real
         </button>
         <button class="admin-tab" onclick="switchTab('tab-config',this)">
           <i class="fas fa-cog me-1"></i>Configuración
@@ -740,6 +792,97 @@
             <div id="csv-list">
               <!-- rendered by JS -->
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Weather Manual -->
+      <div class="tab-panel" id="tab-weather-manual">
+        <div class="data-card">
+          <div class="data-card-header">
+            <h3><i class="fas fa-cloud-sun" style="color:var(--accent)"></i>Actualizar Datos Ambientales en Tiempo Real
+            </h3>
+          </div>
+          <div class="data-card-body" style="padding:1.5rem">
+            <p class="small text-muted mb-2"><i class="fas fa-info-circle me-1"></i>Estos valores se mostrarán en la
+              sección "Datos Ambientales en Tiempo Real" del Dashboard principal.</p>
+            <div id="weather-status-info" class="small mb-4 p-2 rounded"
+              style="background:rgba(255,255,255,0.05); display:none;">
+              <i class="fas fa-clock me-1 text-accent"></i> Última actualización: <span id="w-last-update">--</span>
+              <span class="ms-3"><i class="fas fa-database me-1 text-accent"></i> Origen: <span
+                  id="w-source">--</span></span>
+            </div>
+
+            <form id="weather-manual-form">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">Temperatura (°C)</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-control-glass"><i
+                        class="fas fa-temperature-high text-danger"></i></span>
+                    <input type="number" step="0.1" id="w-temp" class="form-control form-control-glass"
+                      placeholder="30">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">Humedad (%)</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-control-glass"><i class="fas fa-tint text-info"></i></span>
+                    <input type="number" id="w-hum" class="form-control form-control-glass" placeholder="74">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">Viento (km/h)</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-control-glass"><i class="fas fa-wind text-white"></i></span>
+                    <input type="number" step="0.1" id="w-wind" class="form-control form-control-glass"
+                      placeholder="4.8">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">PM10 (µg/m³)</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-control-glass"><i class="fas fa-smog text-warning"></i></span>
+                    <input type="number" step="0.1" id="w-pm10" class="form-control form-control-glass"
+                      placeholder="36.4">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">PM2.5 (µg/m³)</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-control-glass"><i class="fas fa-smog text-muted"></i></span>
+                    <input type="number" step="0.1" id="w-pm25" class="form-control form-control-glass"
+                      placeholder="24.3">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">IQA (Nivel)</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-control-glass"><i class="fas fa-lungs text-success"></i></span>
+                    <select id="w-aqi" class="form-select form-control-glass">
+                      <option value="1">Muy Bueno (1)</option>
+                      <option value="2" selected>Bueno (2)</option>
+                      <option value="3">Moderado (3)</option>
+                      <option value="4">Pobre (4)</option>
+                      <option value="5">Muy Pobre (5)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <div class="d-flex gap-3">
+                    <button type="button" class="btn-login" style="max-width:200px" onclick="saveManualWeather()">
+                      <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                    <button type="button" class="btn-logout"
+                      style="border-color:var(--muted); color:var(--muted); background:transparent;"
+                      onclick="resetWeatherToAPI()">
+                      <i class="fas fa-undo me-2"></i>Restablecer (API)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -930,7 +1073,8 @@
     async function loadCredentials() {
       try {
         // Usamos cache-busting para evitar que el navegador guarde una versión vieja del JSON
-        const r = await fetch('credentials.json?t=' + Date.now());
+        // Usamos api.php como puente para mayor seguridad
+        const r = await fetch('../api.php?route=credentials&t=' + Date.now());
         if (!r.ok) throw new Error("No se pudo cargar el archivo");
         CREDENTIALS = await r.json();
         renderCredentials();
@@ -1110,6 +1254,85 @@
 
     // Load initially
     loadManualDataFromServer();
+    loadManualWeatherFromServer();
+
+    // ─── MANUAL WEATHER DATA ──────────────────────────────────────────────────
+    async function saveManualWeather() {
+      const data = {
+        temp: parseFloat(document.getElementById('w-temp').value),
+        humidity: parseInt(document.getElementById('w-hum').value),
+        wind_speed: parseFloat(document.getElementById('w-wind').value),
+        pm10: parseFloat(document.getElementById('w-pm10').value),
+        pm2_5: parseFloat(document.getElementById('w-pm25').value),
+        aqi: parseInt(document.getElementById('w-aqi').value),
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        const r = await fetch('../api.php?route=manual_weather', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const res = await r.json();
+        if (res.success) {
+          alert('✅ Datos ambientales actualizados con éxito.');
+          // Trigger storage event for the dashboard tab
+          localStorage.setItem('weather_updated', Date.now());
+        }
+      } catch (e) {
+        console.error("Error saving manual weather:", e);
+        alert('❌ Error al guardar los datos.');
+      }
+    }
+
+    async function loadManualWeatherFromServer() {
+      try {
+        const r = await fetch('../api.php?route=manual_weather&t=' + Date.now());
+        if (r.ok) {
+          const data = await r.json();
+          if (data) {
+            document.getElementById('w-temp').value = data.temp || '';
+            document.getElementById('w-hum').value = data.humidity || '';
+            document.getElementById('w-wind').value = data.wind_speed || '';
+            document.getElementById('w-pm10').value = data.pm10 || '';
+            document.getElementById('w-pm25').value = data.pm2_5 || '';
+            document.getElementById('w-aqi').value = data.aqi || '2';
+
+            // Show status info
+            const statusInfo = document.getElementById('weather-status-info');
+            const lastUpdate = document.getElementById('w-last-update');
+            const source = document.getElementById('w-source');
+
+            if (statusInfo) {
+              statusInfo.style.display = 'block';
+              lastUpdate.textContent = new Date(data.timestamp).toLocaleString();
+              source.textContent = data.source === 'analytics' ? '🤖 Modelo IA (Analítica)' : '👤 Manual (Administrador)';
+              source.style.color = data.source === 'analytics' ? 'var(--accent2)' : 'var(--accent)';
+            }
+          } else {
+            document.getElementById('weather-status-info').style.display = 'none';
+          }
+        }
+      } catch (e) { console.warn("Could not load manual weather from server", e); }
+    }
+
+    async function resetWeatherToAPI() {
+      if (!confirm('¿Estás seguro de que deseas restablecer los datos? Se volverán a usar los datos del API o simulados.')) return;
+
+      try {
+        await fetch('../api.php?route=manual_weather', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(null)
+        });
+        document.getElementById('weather-manual-form').reset();
+        alert('✅ Datos restablecidos. El Dashboard volverá a usar el API.');
+        localStorage.setItem('weather_updated', Date.now());
+      } catch (e) {
+        console.error("Error resetting weather:", e);
+      }
+    }
 
     function saveManualData() {
       const station = document.getElementById('manual-station').value;

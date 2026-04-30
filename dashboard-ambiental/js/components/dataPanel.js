@@ -13,20 +13,22 @@ class DataPanel {
 
         const { main, wind, weather: weatherInfo } = weather;
         const aqi = airQuality.list[0].main.aqi;
-        const pm2_5 = airQuality.list[0].components.pm2_5;
+        const pm2_5 = parseFloat(airQuality.list[0].components.pm2_5);
+        const pm10 = parseFloat(airQuality.list[0].components.pm10);
+        const temp = parseFloat(main.temp);
         
         const config = [
-            { label: 'Temperatura', value: `${Math.round(main.temp)}°C`, icon: 'fa-temperature-high', color: 'text-danger' },
-            { label: 'Humedad', value: `${main.humidity}%`, icon: 'fa-tint', color: 'text-info' },
-            { label: 'Viento', value: `${wind.speed} km/h`, icon: 'fa-wind', color: 'text-white' },
-            { label: 'PM10', value: `${airQuality.list[0].components.pm10} µg/m³`, icon: 'fa-smog', color: 'text-warning' },
-            { label: 'PM2.5', value: `${airQuality.list[0].components.pm2_5} µg/m³`, icon: 'fa-smog', color: 'text-muted' },
+            { label: 'Temperatura', value: `${temp.toFixed(1)}°C`, icon: 'fa-temperature-high', color: 'text-danger' },
+            { label: 'Humedad', value: `${Math.round(main.humidity)}%`, icon: 'fa-tint', color: 'text-info' },
+            { label: 'Viento', value: `${Math.round(parseFloat(wind.speed))} m/s`, icon: 'fa-wind', color: 'text-white' },
+            { label: 'PM10', value: `${pm10.toFixed(1)} µg/m³`, icon: 'fa-smog', color: 'text-warning' },
+            { label: 'PM2.5', value: `${pm2_5.toFixed(2)} µg/m³`, icon: 'fa-smog', color: 'text-muted' },
             { label: 'IQA', value: this.getAQILabel(aqi), icon: 'fa-lungs', color: this.getAQIColor(aqi) }
         ];
 
-        this.container.innerHTML = config.map(item => `
+        this.container.innerHTML = config.map((item, index) => `
             <div class="col-md-4 col-6 mb-3">
-                <div class="data-item p-3 text-center h-100">
+                <div class="data-item p-3 text-center h-100" style="animation-delay: ${index * 0.1}s">
                     <i class="fas ${item.icon} ${item.color} mb-2 fa-lg"></i>
                     <p class="text-muted small mb-1">${item.label}</p>
                     <h5 class="mb-0 fw-bold">${item.value}</h5>
@@ -36,7 +38,7 @@ class DataPanel {
 
         // Update single fields for extra emphasis if they exist in HTML
         const tempEl = document.getElementById('temp-val');
-        if (tempEl) tempEl.textContent = `${Math.round(main.temp)}°C`;
+        if (tempEl) tempEl.textContent = `${temp.toFixed(1)}°C`;
     }
 
     getAQILabel(aqi) {

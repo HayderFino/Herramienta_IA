@@ -9,6 +9,7 @@ import { mapComponent } from './components/mapComponent.js?v=20260425';
 import { dataPanel } from './components/dataPanel.js?v=20260425';
 import { predictionPanel } from './components/predictionPanel.js?v=20260425';
 import { recommendationPanel } from './components/recommendationPanel.js?v=20260425';
+import { cumulativePanel } from './components/cumulativePanel.js?v=20260425';
 
 class App {
     async init() {
@@ -16,6 +17,7 @@ class App {
         
         // 1. Initialize Components
         mapComponent.init();
+        cumulativePanel.init();
         
         // 2. Load Initial Data
         await this.refreshData();
@@ -23,25 +25,31 @@ class App {
         // 3. Apply Configuration
         this.applyDashboardConfig();
 
-        // 4. Setup Listeners
+        // 4. Handle URL Parameters (Banco Agrario Logic)
+        this.handleUrlParameters();
+
+        // 5. Setup Listeners
         this.setupEventListeners();
     }
 
     applyDashboardConfig() {
+        const uri = decodeURI(document.URL.toString());
+        const isAdmin = uri.indexOf("admin=1245") > 0;
+        
         const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
         const colMain = document.getElementById('col-main');
         const colSide = document.getElementById('col-side');
 
         if (colMain && colSide) {
-            // Ahora la lógica es INVERSA: Se muestra solo si 'showPredictiveModel' es true.
-            // Si es undefined o false, se oculta (oculto por defecto).
-            if (config.showPredictiveModel === true) {
-                console.log('👁 showing side-view (Prediction Model)');
+            // Lógica: Solo se muestra si es Admin Y la opción está activada en la config.
+            // Por defecto (si no es admin o no está activado), se oculta.
+            if (isAdmin && config.showPredictiveModel === true) {
+                console.log('👁 Admin detectado: Mostrando modelo predictivo lateral.');
                 colSide.classList.remove('d-none');
                 colMain.classList.remove('col-lg-12');
                 colMain.classList.add('col-lg-8');
             } else {
-                console.log('🙈 Hiding side-view (Prediction Model) by default');
+                console.log('🙈 Ocultando modelo predictivo lateral (No admin o desactivado).');
                 colSide.classList.add('d-none');
                 colMain.classList.remove('col-lg-8');
                 colMain.classList.add('col-lg-12');
@@ -53,6 +61,23 @@ class App {
                     mapComponent.map.invalidateSize();
                 }, 300);
             }
+        }
+    }
+
+    handleUrlParameters() {
+        const uri = decodeURI(document.URL.toString());
+        const isAdminSession = uri.indexOf("admin=1245") > 0;
+        
+        const adminBtn = document.getElementById('admin-btn');
+        const hdTipoCons = document.getElementById('hdTipoCons');
+
+        if (isAdminSession) {
+            console.log('🔓 Admin Session Activated');
+            if (adminBtn) adminBtn.classList.remove('d-none');
+            if (hdTipoCons) hdTipoCons.value = "Administrador";
+        } else {
+            if (adminBtn) adminBtn.classList.add('d-none');
+            if (hdTipoCons) hdTipoCons.value = "Publico";
         }
     }
 
@@ -71,6 +96,7 @@ class App {
             dataPanel.render(weather, airQuality);
             predictionPanel.render(prediction);
             recommendationPanel.render(weather, airQuality);
+            cumulativePanel.update();
 
             console.log('✅ Dashboard updated successfully.');
         } catch (error) {
@@ -86,7 +112,7 @@ class App {
         }
 
         // Layer Switches
-        const layers = ['Clima', 'Aire'];
+        const layers = ['Clima', 'Aire', 'Hidro'];
         layers.forEach(l => {
             const btn = document.getElementById(`layer${l}`);
             if (btn) {
@@ -110,11 +136,21 @@ class App {
         window.addEventListener('storage', () => {
             console.log('🔄 Dashboard: Detectado cambio en localStorage, aplicando config...');
             this.applyDashboardConfig();
+            cumulativePanel.update();
             this.refreshData(); // Refresh metrics just in case
         });
 
         // File Selection (NEW)
         this.setupUploadListener();
+
+        // Admin Access Handshake
+        const adminBtn = document.getElementById('admin-btn');
+        if (adminBtn) {
+            adminBtn.addEventListener('click', () => {
+                console.log('🔑 Setting admin access handshake...');
+                sessionStorage.setItem('admin_access_handshake', 'true');
+            });
+        }
     }
 
     setupUploadListener() {

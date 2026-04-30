@@ -27,12 +27,27 @@ $endpoints = [
     'health'      => '/health',
     'predict'     => '/api/predict',
     'upload'      => '/api/predict/upload',
-    'manual_data' => '/api/manual_data'
+    'manual_data' => '/api/manual_data',
+    'manual_weather' => '/api/manual_weather',
+    'pm25_history' => '/api/pm25_history',
+    'credentials' => 'admin/credentials.json' // Local file path
 ];
 
 if (!isset($endpoints[$route])) {
     http_response_code(404);
     echo json_encode(["success" => false, "error" => "Ruta no encontrada: $route"]);
+    exit;
+}
+
+if ($endpoints[$route][0] !== '/') {
+    // Es un archivo local
+    $file_path = __DIR__ . '/' . $endpoints[$route];
+    if (file_exists($file_path)) {
+        echo file_get_contents($file_path);
+    } else {
+        http_response_code(404);
+        echo json_encode(["success" => false, "error" => "Archivo no encontrado"]);
+    }
     exit;
 }
 

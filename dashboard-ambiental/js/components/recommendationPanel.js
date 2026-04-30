@@ -17,58 +17,46 @@ class RecommendationPanel {
         if (mlRecommendations && mlRecommendations.length > 0) {
             recommendations = mlRecommendations;
         } else {
-            // LÓGICA BASADA EN NORMATIVA COLOMBIANA (Res. 2254/2017)
-            const temp = weather.main.temp;
-            const pm2_5 = airQuality ? airQuality.list[0].components.pm2_5 : 10;
-            const aqi = airQuality ? airQuality.list[0].main.aqi : 1;
+            const pm2_5 = airQuality ? parseFloat(airQuality.list[0].components.pm2_5) : 10;
 
-            // 1. Recomendación Térmica (Ajustada a Barrancabermeja)
-            if (temp > 38) {
+            // 1. Recomendaciones basadas en PM2.5
+            if (pm2_5 <= 25) {
                 recommendations.push({
-                    type: 'danger', // #184424
-                    icon: 'fa-thermometer-full',
-                    title: '¡ALERTA TÉRMICA!',
-                    text: `Temperatura crítica de ${Math.round(temp)}°C. Riesgo de estrés térmico elevado.`
+                    type: 'success',
+                    icon: 'fa-check-circle',
+                    title: 'CALIDAD DEL AIRE: BUENO (0 – 25 µg/m³)',
+                    text: 'Actividades normales al aire libre. Promover movilidad sostenible (bicicleta, caminar). Mantener ventilación natural en espacios cerrados.'
                 });
-            } else if (temp > 35) {
-                recommendations.push({
-                    type: 'warning', // #006699 (Azul Institucional en CSS)
-                    icon: 'fa-sun',
-                    title: 'Riesgo Térmico',
-                    text: `Condiciones de ${Math.round(temp)}°C. Se recomienda precaución en exteriores.`
-                });
-            } else {
-                recommendations.push({
-                    type: 'success', // #339933
-                    icon: 'fa-temperature-low',
-                    title: 'Clima Moderado',
-                    text: 'Temperatura dentro de los rangos normales para la región.'
-                });
-            }
-
-            // 2. Recomendación Calidad Aire (Res. 2254 de 2017 Col)
-            if (pm2_5 > 37) {
-                recommendations.push({
-                    type: 'danger',
-                    icon: 'fa-head-side-mask',
-                    title: 'SUPERACIÓN NORMA COL.',
-                    text: `PM2.5 en ${Math.round(pm2_5)} µg/m³. Excede el límite legal diario permitido en Colombia.`
-                });
-            } else if (pm2_5 > 15) {
+            } else if (pm2_5 <= 50) {
                 recommendations.push({
                     type: 'warning',
-                    icon: 'fa-smog',
-                    title: 'Norma: Prevención',
-                    text: `Calidad del aire aceptable (${Math.round(pm2_5)} µg/m³), pero bajo vigilancia ambiental.`
+                    icon: 'fa-exclamation-circle',
+                    title: 'CALIDAD DEL AIRE: MODERADO (26 – 50 µg/m³)',
+                    text: 'Personas sensibles (niños, adultos mayores, asmáticos) deben: Reducir exposición prolongada. Evitar ejercicio intenso en exteriores. Monitorear continuamente los niveles.'
+                });
+            } else if (pm2_5 <= 75) {
+                recommendations.push({
+                    type: 'danger',
+                    icon: 'fa-mask',
+                    title: 'CALIDAD DEL AIRE: DAÑINO (51 – 75 µg/m³)',
+                    text: 'Limitar actividades físicas al aire libre. Uso recomendado de mascarillas (tipo N95 o equivalente). Cerrar ventanas en horas de mayor contaminación. Uso de purificadores de aire en interiores. Priorizar teletrabajo o actividades remotas si es posible.'
                 });
             } else {
-                 recommendations.push({
-                    type: 'success',
-                    icon: 'fa-leaf',
-                    title: 'Día Saludable',
-                    text: 'Calidad del aire excelente. Cumple con los estándares de la Resolución 2254 de 2017.'
+                recommendations.push({
+                    type: 'danger',
+                    icon: 'fa-biohazard',
+                    title: 'CALIDAD DEL AIRE: PELIGROSO (> 75 µg/m³)',
+                    text: 'Evitar salir al exterior salvo necesidad. Suspender actividades deportivas al aire libre. Uso obligatorio de protección respiratoria. Mantener espacios cerrados y sellados. Activar alertas en el sistema (notificaciones, dashboards). Implementar protocolos institucionales de emergencia.'
                 });
             }
+
+            // 2. Recomendación General OMS
+            recommendations.push({
+                type: 'info',
+                icon: 'fa-hospital',
+                title: 'RECOMENDACIONES GENERALES (OMS)',
+                text: 'Reducir la exposición prolongada incluso a niveles moderados. Priorizar la protección de grupos vulnerables. Implementar sistemas de monitoreo continuo. Promover políticas de reducción de emisiones (vehículos, industria). Educar a la población sobre riesgos y prevención.'
+            });
         }
 
         // Renderizado final

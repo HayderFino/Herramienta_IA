@@ -21,21 +21,31 @@
 
 <body>
     <div class="app-container">
+        <!-- Hidden field for Session tracking -->
+        <input type="hidden" id="hdTipoCons" value="Publico">
+
         <!-- Floating Header -->
         <header class="dashboard-header glass">
             <div class="logo-section">
                 <img src="logo-inner.png" alt="Logo Barrancabermeja Ambiental" class="logo-img">
             </div>
             <div class="layer-selector">
-                <div class="layer-selector-container">
-                    <input type="radio" class="btn-check" name="layerBtn" id="layerAire" checked>
-                    <label class="btn btn-outline-info" for="layerAire"><i class="fas fa-wind me-2"></i>Calidad del
-                        Aire</label>
+                <div class="layer-selector-container d-flex gap-2">
+                    <div class="form-check-inline">
+                        <input type="radio" class="btn-check" name="layerBtn" id="layerAire" checked>
+                        <label class="btn btn-outline-info" for="layerAire"><i class="fas fa-wind me-2"></i>Calidad del Aire</label>
+                    </div>
+                    <div class="form-check-inline">
+                        <input type="radio" class="btn-check" name="layerBtn" id="layerHidro">
+                        <label class="btn btn-outline-info" for="layerHidro"><i class="fas fa-water me-2"></i>Hidrológicas (IDEAM)</label>
+                    </div>
                 </div>
             </div>
             <div class="user-actions d-flex gap-2 align-items-center">
-                <!-- <button class="btn btn-primary" id="refresh-btn"><i class="fas fa-sync-alt me-2"></i>Actualizar</button> -- implementacion boton de actualizar(en futuro)-->
-                <a href="admin/index.html" class="btn btn-outline-warning" id="admin-btn"
+                <a href="https://www.cas.gov.co/gestion-corporativa/gestion-de-planeacion/calidad-del-aire" target="_blank" class="btn btn-outline-light" id="docs-btn">
+                    <i class="fas fa-file-alt me-2"></i>Documentos
+                </a>
+                <a href="admin/index.html" class="btn btn-outline-warning d-none" id="admin-btn"
                     title="Panel de Administración">
                     <i class="fas fa-shield-halved me-2"></i>Admin
                 </a>
@@ -136,6 +146,23 @@
                                             Conexión con <code>modelo.py</code> lista para enlace API.
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cumulative PM2.5 Analysis Row (NEW) -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card glass">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-chart-bar me-2 text-warning"></i>Comportamiento PM2.5 por Estación (Acumulado)</h5>
+                                <span class="badge bg-opacity-10 bg-warning text-warning border border-warning border-opacity-25">Vista Comparativa</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="height: 300px; position: relative;">
+                                    <canvas id="cumulativeChart"></canvas>
                                 </div>
                             </div>
                         </div>

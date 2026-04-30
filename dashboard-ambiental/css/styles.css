@@ -59,6 +59,57 @@ body {
     border-color: white !important;
 }
 
+/* Capsule Selector Styling (Interruptor) */
+.layer-selector-container {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 4px;
+    border-radius: 50px;
+    display: inline-flex;
+    gap: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.layer-selector-container .btn-check + .btn {
+    border-radius: 50px !important;
+    border: none !important;
+    padding: 0.5rem 1.5rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.layer-selector-container .btn-check:checked + .btn {
+    background: white !important;
+    color: #006699 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    transform: scale(1.05);
+}
+
+/* Documentos Button Hover Animation */
+#docs-btn {
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#docs-btn:hover {
+    background: white !important;
+    color: #006699 !important;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    border-color: white !important;
+}
+
+#docs-btn i {
+    transition: transform 0.4s ease;
+}
+
+#docs-btn:hover i {
+    transform: rotate(15deg) scale(1.2);
+}
+
 .logo-section {
     display: flex;
     align-items: center;
@@ -182,13 +233,20 @@ body {
     border: 1px solid #E2E8F0;
     padding: 1rem 1.25rem;
     border-radius: 10px;
-    border-left: 4px solid #3B9A54;
-    transition: transform 0.2s;
+    border-left: 4px solid #3B9A54; /* Default Success */
+    transition: all 0.3s ease;
 }
 
-.recommendation-card:hover { background-color: #FFFFFF; }
-.recommendation-card.warning { border-left-color: #006699; }
-.recommendation-card.danger { border-left-color: #184424; }
+.recommendation-card:hover {
+    background-color: #FFFFFF;
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.recommendation-card.success { border-left-color: #3B9A54; }
+.recommendation-card.warning { border-left-color: #FFC107; }
+.recommendation-card.danger { border-left-color: #EF4444; }
+.recommendation-card.info { border-left-color: #006699; }
 
 .recommendation-card strong { color: var(--dark-text); font-size: 0.9rem; }
 .recommendation-card p { color: var(--muted-text); font-size: 0.85rem; margin-top: 2px; }
@@ -225,11 +283,78 @@ body {
     background-color: #FFFFFF;
 }
 
-.text-success { color: #3B9A54 !important; }
-.text-info { color: #006699 !important; }
-.text-warning { color: #006699 !important; }
-.text-danger { color: #184424 !important; }
-.text-muted { color: #666666 !important; }
+.text-success { color: #22C55E !important; } /* Vibrant Green */
+.text-info { color: #3B82F6 !important; }    /* Vibrant Blue */
+.text-warning { color: #F59E0B !important; } /* Vibrant Orange/Yellow */
+.text-danger { color: #EF4444 !important; }  /* Vibrant Red */
+.text-muted { color: #64748B !important; }
+
+.recommendation-card {
+    transition: all 0.3s ease;
+    animation: slideInUp 0.6s ease-out backwards;
+}
+
+/* Enhanced Button Styles - "Encendedor" Hover */
+.btn-outline-info, .btn-outline-warning, .btn-outline-light {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 8px !important;
+    border-width: 1.5px !important;
+}
+
+.btn-outline-info:hover, .btn-outline-warning:hover, .btn-outline-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 0 30px rgba(0, 102, 153, 0.2);
+    border-color: #FFFFFF !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Specific Glow per Button Type */
+.btn-outline-info:hover { box-shadow: 0 0 20px rgba(0, 204, 255, 0.6); }
+.btn-outline-warning:hover { box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); }
+.btn-outline-light:hover { box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+
+/* Animations */
+@keyframes slideInUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInScale {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 5px rgba(59, 154, 84, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(59, 154, 84, 0.4); }
+    100% { box-shadow: 0 0 5px rgba(59, 154, 84, 0.2); }
+}
+
+.glass {
+    animation: fadeInScale 0.6s ease-out forwards;
+}
+
+.data-item {
+    animation: slideInUp 0.5s ease-out backwards;
+}
+
+.data-item:nth-child(1) { animation-delay: 0.1s; }
+.data-item:nth-child(2) { animation-delay: 0.2s; }
+.data-item:nth-child(3) { animation-delay: 0.3s; }
+.data-item:nth-child(4) { animation-delay: 0.4s; }
+.data-item:nth-child(5) { animation-delay: 0.5s; }
+.data-item:nth-child(6) { animation-delay: 0.6s; }
+
+.recommendation-card {
+    transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
 
 .logo-section span {
     color: #339933;
@@ -289,4 +414,102 @@ body {
 .var-box small {
     font-size: 0.65rem;
     font-weight: 400;
+}
+/* ── Responsive Design / Mobile Optimization ────────────────────────── */
+
+@media (max-width: 992px) {
+    .app-container {
+        padding: 1rem 1.5rem;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 1.2rem;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .layer-selector {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .layer-selector-container {
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .layer-selector-container .btn {
+        flex: 1;
+        font-size: 0.75rem !important;
+        padding: 0.6rem 0.5rem !important;
+        white-space: nowrap;
+    }
+
+    #col-main {
+        margin-bottom: 1rem;
+    }
+
+    #map {
+        height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .row > * {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .data-item {
+        padding: 1rem 0.5rem !important;
+    }
+    
+    .data-item h5 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .app-container {
+        padding: 0.5rem 0.8rem;
+    }
+    
+    .logo-img {
+        max-height: 35px;
+    }
+    
+    .card-header {
+        padding: 0.8rem 1rem;
+    }
+    
+    .card-header h5 {
+        font-size: 0.9rem;
+    }
+    
+    #map {
+        height: 260px;
+    }
+    
+    .user-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #docs-btn, #admin-btn {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .legend-item {
+        font-size: 0.7rem;
+    }
+
+    footer {
+        padding: 1.5rem 0 !important;
+    }
 }

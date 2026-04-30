@@ -15,26 +15,51 @@ class WeatherService {
 
     async getCurrentWeather() {
         try {
-            const url = `${this.baseUrl}/weather?lat=${this.lat}&lon=${this.lon}&units=metric&lang=es&appid=${this.apiKey}`;
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Failed to fetch weather data');
-            return await response.json();
+            // Prioridad 1: Intentar obtener datos manuales guardados en el sistema
+            const manual = await this.getManualWeather();
+            if (manual && manual.temp !== undefined) {
+                return {
+                    main: { temp: manual.temp, humidity: manual.humidity || 70 },
+                    wind: { speed: manual.wind_speed || 0 },
+                    weather: [{ description: 'Datos del sistema', icon: '01d' }],
+                    name: 'Barrancabermeja (Local)'
+                };
+            }
+            // Prioridad 2: Si no hay manuales o falla la API local, devolver simulados
+            return this.getMockWeather();
         } catch (error) {
-            console.warn('Weather API failed, returning mock data:', error);
             return this.getMockWeather();
         }
     }
 
     async getAirQuality() {
         try {
-            const url = `${this.baseUrl}/air_pollution?lat=${this.lat}&lon=${this.lon}&appid=${this.apiKey}`;
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Failed to fetch air quality data');
-            return await response.json();
+            const manual = await this.getManualWeather();
+            if (manual && manual.pm2_5 !== undefined) {
+                return {
+                    list: [{
+                        main: { aqi: manual.aqi || 2 },
+                        components: { pm2_5: manual.pm2_5, pm10: manual.pm10 || 30 }
+                    }]
+                };
+            }
+            return this.getMockAirQuality();
         } catch (error) {
-            console.warn('Air Pollution API failed, returning mock data:', error);
             return this.getMockAirQuality();
         }
+    }
+
+    async getManualWeather() {
+        try {
+            const r = await fetch('api.php?route=manual_weather&t=' + Date.now());
+            if (r.ok) {
+                const data = await r.json();
+                return data; // returns null if no manual data
+            }
+        } catch (e) {
+            return null;
+        }
+        return null;
     }
 
     getMockWeather() {

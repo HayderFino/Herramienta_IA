@@ -1,0 +1,10 @@
+{
+  "temp": 28.16,
+  "humidity": 71.45,
+  "wind_speed": 2.51,
+  "pm10": 40.54,
+  "pm2_5": 21.16,
+  "aqi": 5,
+  "timestamp": "2026-04-30T15:05:01.433687",
+  "source": "analytics"
+}

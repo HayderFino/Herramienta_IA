@@ -20,12 +20,18 @@ class MapComponent {
                 { name: "CAS Escuela San Silvestre", short: "San Silvestre", coords: [7.0834, -73.83934], type: "Calidad de Aire" },
                 { name: "CAS-SUB Estacion Bomberos", short: "CAS-SUB", coords: [7.0719, -73.8342], type: "Calidad de Aire" },
                 { name: "CAS Universidad Industrial de Santander", short: "UIS", coords: [7.0695, -73.8518], type: "Calidad de Aire" }
+            ],
+            hidro: [
+                { name: "PIRMA-3 HATO", short: "HATO", coords: [6.520736, -73.366447], type: "Hidrológica (IDEAM)" },
+                { name: "PIRMA-2 ENCINO", short: "ENCINO", coords: [6.135536, -73.112619], type: "Hidrológica (IDEAM)" },
+                { name: "PIRMA-1 CURITI", short: "CURITI", coords: [6.606756, -73.073383], type: "Hidrológica (IDEAM)" }
             ]
         };
 
         // Estilos visuales por categoria
         this.categoryStyle = {
-            aire: { color: '#3399CC', icon: 'fa-wind' }
+            aire: { color: '#3399CC', icon: 'fa-wind' },
+            hidro: { color: '#006699', icon: 'fa-water' }
         };
     }
 
@@ -44,7 +50,8 @@ class MapComponent {
 
         // 2. Crear el LayerGroup para Aire (Única capa activa)
         this.layers = {
-            aire: L.layerGroup()
+            aire: L.layerGroup(),
+            hidro: L.layerGroup()
         };
 
         // 3. Poblar layer con marcadores
@@ -69,16 +76,18 @@ class MapComponent {
             }
         });
 
-        // 7. Cargar datos persistentes del servidor Python
-        fetch('http://localhost:8000/api/manual_data?t=' + Date.now())
-            .then(r => r.json())
+        // 7. Cargar datos persistentes del servidor a través de api.php
+        fetch('api.php?route=manual_data&t=' + Date.now())
+            .then(r => r.ok ? r.json() : null)
             .then(data => {
-                localStorage.setItem('manualStationData', JSON.stringify(data));
-                let ev = new Event('storage');
-                ev.key = 'manualStationData';
-                window.dispatchEvent(ev);
+                if (data) {
+                    localStorage.setItem('manualStationData', JSON.stringify(data));
+                    let ev = new Event('storage');
+                    ev.key = 'manualStationData';
+                    window.dispatchEvent(ev);
+                }
             })
-            .catch(e => console.warn("No se pudo cargar datos persistentes", e));
+            .catch(() => {}); // Fallback silencioso si el motor está apagado
     }
 
     /** Helper para determinar color basado en el número **/
@@ -122,6 +131,16 @@ class MapComponent {
                             <div class="legend-item"><span class="color-box" style="background-color:#FF9800; width:15px; height:10px;"></span> 51 - 75 <small class="ms-1">Dañino</small></div>
                             <div class="legend-item"><span class="color-box" style="background-color:#EF4444; width:15px; height:10px;"></span> > 75 <small class="ms-1">Peligroso</small></div>
                         </div>
+                    </div>
+                </div>`;
+        } else if (layerName === 'hidro') {
+            html = `
+                <div class="legend-header d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Estaciones Hidrológicas</h6>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="small text-muted" style="font-size:0.7rem;">Monitoreo de niveles y caudales IDEAM (Santander)</div>
                     </div>
                 </div>`;
         }
@@ -219,8 +238,12 @@ class MapComponent {
                 let statusColor = dynamicColor;
 
                 if (override) {
-                    statusName = `Inyectado/Man.: ${override.status}`;
-                    indicatorHTML = `<div class="fw-bold fs-5 mt-1" style="color:${dynamicColor}">${override.indicator}</div>`;
+                    statusName = `${override.status}`;
+                    let val = parseFloat(override.indicator);
+                    let formattedVal = isNaN(val) ? override.indicator : (category === 'aire' ? val.toFixed(2) : val.toFixed(1));
+                    let unit = category === 'aire' ? ' µg/m³' : ' °C';
+                    
+                    indicatorHTML = `<div class="fw-bold fs-5 mt-1" style="color:${dynamicColor}">${formattedVal}${unit}</div>`;
                     if (override.status === 'Offline') statusColor = '#6c757d';
                 }
 
@@ -243,8 +266,11 @@ class MapComponent {
                 const displayName = station.short || station.name;
                 let tooltipContent = `<strong>${displayName}</strong>`;
                 if (override && override.indicator) {
+                    let val = parseFloat(override.indicator);
+                    let formattedVal = isNaN(val) ? override.indicator : (category === 'aire' ? val.toFixed(2) : val.toFixed(1));
+                    let unit = category === 'aire' ? ' µg/m³' : ' °C';
                     // Muestra el valor de color resaltado, para que destaque en el mapa permanentemente
-                    tooltipContent += `<br><span style="color:${dynamicColor}; font-weight:900; font-size:1.3em; background:rgba(255,255,255,0.9); padding:1px 4px; border-radius:4px; display:inline-block; margin-top:2px;">${override.indicator}</span>`;
+                    tooltipContent += `<br><span style="color:${dynamicColor}; font-weight:900; font-size:1.3em; background:rgba(255,255,255,0.9); padding:1px 4px; border-radius:4px; display:inline-block; margin-top:2px;">${formattedVal}${unit}</span>`;
                 }
 
                 marker.bindTooltip(
@@ -344,10 +370,11 @@ class MapComponent {
             let status = 'Estable';
 
             if (override) {
-                indicator = override.indicator || '--';
+                let val = parseFloat(override.indicator);
+                indicator = isNaN(val) ? override.indicator : (this.currentLayer === 'aire' ? val.toFixed(2) + ' µg/m³' : val.toFixed(1) + ' °C');
                 status = override.status;
             } else {
-                indicator = (this.currentLayer === 'aire') ? '15 µg/m³' : (this.currentLayer === 'clima' ? '28 °C' : '7.0 pH');
+                indicator = (this.currentLayer === 'aire') ? '15.00 µg/m³' : (this.currentLayer === 'clima' ? '28.0 °C' : (this.currentLayer === 'hidro' ? 'Activa' : '7.0 pH'));
             }
 
             let statusColor = this._getColorForValue(this.currentLayer, indicator, style.color);
@@ -369,10 +396,10 @@ class MapComponent {
                     extraInfo = `
                         <div class="variables-grid mt-2 mb-3">
                             <div class="row g-2 text-center">
-                                <div class="col-8"><div class="var-box ${this._getVarStatus('pm2_5', d.pm2_5)}"><span>PM2.5</span><strong>${d.pm2_5 || '--'}</strong></div></div>
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${d.tem || '--'}°</strong></div></div>
-                                <div class="col-6"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${d.hum || '--'}%</strong></div></div>
-                                <div class="col-6"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${d.vel || '--'} <small>m/s</small></strong></div></div>
+                                <div class="col-8"><div class="var-box ${this._getVarStatus('pm2_5', d.pm2_5)}"><span>PM2.5</span><strong>${parseFloat(d.pm2_5 || 0).toFixed(2)}</strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${parseFloat(d.tem || 0).toFixed(1)}°</strong></div></div>
+                                <div class="col-6"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${Math.round(parseFloat(d.hum || 0))}%</strong></div></div>
+                                <div class="col-6"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${Math.round(parseFloat(d.vel || 0))} <small>m/s</small></strong></div></div>
                             </div>
                         </div>
                     `;
@@ -380,9 +407,22 @@ class MapComponent {
                     extraInfo = `
                         <div class="variables-grid mt-2 mb-3">
                             <div class="row g-2 text-center">
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${d.tem || '--'}°</strong></div></div>
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${d.hum || '--'}%</strong></div></div>
-                                <div class="col-4"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${d.vel || '--'} <small>m/s</small></strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('tem', d.tem)}"><span>TEM</span><strong>${parseFloat(d.tem || 0).toFixed(1)}°</strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('hum', d.hum)}"><span>HUM</span><strong>${Math.round(parseFloat(d.hum || 0))}%</strong></div></div>
+                                <div class="col-4"><div class="var-box ${this._getVarStatus('vel', d.vel)}"><span>VEL</span><strong>${Math.round(parseFloat(d.vel || 0))} <small>m/s</small></strong></div></div>
+                            </div>
+                        </div>
+                    `;
+                } else if (this.currentLayer === 'hidro') {
+                    extraInfo = `
+                        <div class="variables-grid mt-2 mb-3">
+                            <div class="row g-2 text-center">
+                                <div class="col-12">
+                                    <div class="var-box status-good">
+                                        <span>Coordenadas</span>
+                                        <strong>${station.coords[0]}, ${station.coords[1]}</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
