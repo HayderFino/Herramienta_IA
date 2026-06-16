@@ -1,1 +1,7 @@
-http://localhost/CAS/solucion-monitoreo/herrameinta%20IA/dashboard-ambiental/index.html?admin=1245
+con privilegios 
+http://localhost/CAS/solucion-monitoreo/herrameinta_IA/dashboard-ambiental/index.html?admin=1245
+
+
+
+normal 
+http://localhost/Practicas-Hayder-2026-1/Herramienta_IA/dashboard-ambiental/
