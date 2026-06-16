@@ -1,6 +1,32 @@
 [
-  {
-    "timestamp": "08:48",
-    "value": 21.16
-  }
+    {
+        "timestamp": "14:00",
+        "value": 15.5,
+        "station": "CAS Alcaldia"
+    },
+    {
+        "timestamp": "16\/06 14:29",
+        "value": 34.8,
+        "station": "CAS Escuela San Silvestre"
+    },
+    {
+        "timestamp": "16\/06 14:29",
+        "value": 25.9,
+        "station": "CAS Alcaldia"
+    },
+    {
+        "timestamp": "16\/06 14:35",
+        "value": 12.5,
+        "station": "CAS Escuela San Silvestre"
+    },
+    {
+        "timestamp": "16\/06 14:35",
+        "value": 13.9,
+        "station": "CAS-SUB Estacion Bomberos"
+    },
+    {
+        "timestamp": "16\/06 14:36",
+        "value": 34.8,
+        "station": "CAS Universidad Industrial de Santander"
+    }
 ]
