@@ -31,10 +31,10 @@ class App {
         // 5. Setup Listeners
         this.setupEventListeners();
     }
-
+        //validaciones para el admin
     applyDashboardConfig() {
         const uri = decodeURI(document.URL.toString());
-        const isAdmin = uri.indexOf("admin=1245") > 0;
+        const isAdmin = uri.toLowerCase().indexOf("admin=1245") > 0;
         
         const config = JSON.parse(localStorage.getItem('dashboardConfig') || '{}');
         const colMain = document.getElementById('col-main');
@@ -44,12 +44,12 @@ class App {
             // Lógica: Solo se muestra si es Admin Y la opción está activada en la config.
             // Por defecto (si no es admin o no está activado), se oculta.
             if (isAdmin && config.showPredictiveModel === true) {
-                console.log('👁 Admin detectado: Mostrando modelo predictivo lateral.');
+                console.log('Admin detectado: Mostrando modelo predictivo lateral.');
                 colSide.classList.remove('d-none');
                 colMain.classList.remove('col-lg-12');
                 colMain.classList.add('col-lg-8');
             } else {
-                console.log('🙈 Ocultando modelo predictivo lateral (No admin o desactivado).');
+                console.log('Ocultando modelo predictivo lateral (No admin o desactivado).');
                 colSide.classList.add('d-none');
                 colMain.classList.remove('col-lg-8');
                 colMain.classList.add('col-lg-12');
@@ -66,13 +66,13 @@ class App {
 
     handleUrlParameters() {
         const uri = decodeURI(document.URL.toString());
-        const isAdminSession = uri.indexOf("admin=1245") > 0;
+        const isAdminSession = uri.toLowerCase().indexOf("admin=1245") > 0;
         
         const adminBtn = document.getElementById('admin-btn');
         const hdTipoCons = document.getElementById('hdTipoCons');
 
         if (isAdminSession) {
-            console.log('🔓 Admin Session Activated');
+            console.log('Admin Session Activated');
             if (adminBtn) adminBtn.classList.remove('d-none');
             if (hdTipoCons) hdTipoCons.value = "Administrador";
         } else {
@@ -83,7 +83,7 @@ class App {
 
     async refreshData() {
         try {
-            console.log('🔄 Refreshing data...');
+            console.log('Refreshing data...');
             // In parallel for speed
             const [weather, airQuality, prediction] = await Promise.all([
                 weatherService.getCurrentWeather(),
@@ -92,7 +92,7 @@ class App {
             ]);
 
             // Render components
-            mapComponent.updateMarker(weather);
+            // mapComponent.updateMarker(weather);
             dataPanel.render(weather, airQuality);
             predictionPanel.render(prediction);
             recommendationPanel.render(weather, airQuality);

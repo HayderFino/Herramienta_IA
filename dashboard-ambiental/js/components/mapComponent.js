@@ -87,7 +87,7 @@ class MapComponent {
                     window.dispatchEvent(ev);
                 }
             })
-            .catch(() => {}); // Fallback silencioso si el motor está apagado
+            .catch(() => { }); // Fallback silencioso si el motor está apagado
     }
 
     /** Helper para determinar color basado en el número **/
@@ -140,7 +140,7 @@ class MapComponent {
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <div class="small text-muted" style="font-size:0.7rem;">Monitoreo de niveles y caudales IDEAM (Santander)</div>
+                        <div class="small text-muted" style="font-size:0.7rem;">Monitoreo de niveles y caudales (Santander)</div>
                     </div>
                 </div>`;
         }
@@ -241,8 +241,8 @@ class MapComponent {
                     statusName = `${override.status}`;
                     let val = parseFloat(override.indicator);
                     let formattedVal = isNaN(val) ? override.indicator : (category === 'aire' ? val.toFixed(2) : val.toFixed(1));
-                    let unit = category === 'aire' ? ' µg/m³' : ' °C';
-                    
+                    let unit = category === 'aire' ? ' µg/m³' : (category === 'hidro' ? ' m' : ' °C');
+
                     indicatorHTML = `<div class="fw-bold fs-5 mt-1" style="color:${dynamicColor}">${formattedVal}${unit}</div>`;
                     if (override.status === 'Offline') statusColor = '#6c757d';
                 }
@@ -268,7 +268,7 @@ class MapComponent {
                 if (override && override.indicator) {
                     let val = parseFloat(override.indicator);
                     let formattedVal = isNaN(val) ? override.indicator : (category === 'aire' ? val.toFixed(2) : val.toFixed(1));
-                    let unit = category === 'aire' ? ' µg/m³' : ' °C';
+                    let unit = category === 'aire' ? ' µg/m³' : (category === 'hidro' ? ' m' : ' °C');
                     // Muestra el valor de color resaltado, para que destaque en el mapa permanentemente
                     tooltipContent += `<br><span style="color:${dynamicColor}; font-weight:900; font-size:1.3em; background:rgba(255,255,255,0.9); padding:1px 4px; border-radius:4px; display:inline-block; margin-top:2px;">${formattedVal}${unit}</span>`;
                 }
@@ -371,7 +371,7 @@ class MapComponent {
 
             if (override) {
                 let val = parseFloat(override.indicator);
-                indicator = isNaN(val) ? override.indicator : (this.currentLayer === 'aire' ? val.toFixed(2) + ' µg/m³' : val.toFixed(1) + ' °C');
+                indicator = isNaN(val) ? override.indicator : (this.currentLayer === 'aire' ? val.toFixed(2) + ' µg/m³' : (this.currentLayer === 'hidro' ? val.toFixed(1) + ' m' : val.toFixed(1) + ' °C'));
                 status = override.status;
             } else {
                 indicator = (this.currentLayer === 'aire') ? '15.00 µg/m³' : (this.currentLayer === 'clima' ? '28.0 °C' : (this.currentLayer === 'hidro' ? 'Activa' : '7.0 pH'));
@@ -414,18 +414,36 @@ class MapComponent {
                         </div>
                     `;
                 } else if (this.currentLayer === 'hidro') {
-                    extraInfo = `
-                        <div class="variables-grid mt-2 mb-3">
-                            <div class="row g-2 text-center">
-                                <div class="col-12">
-                                    <div class="var-box status-good">
-                                        <span>Coordenadas</span>
-                                        <strong>${station.coords[0]}, ${station.coords[1]}</strong>
+                    if (d.readings) {
+                        const readings = Object.values(d.readings);
+                        extraInfo = `
+                            <div class="variables-grid mt-2 mb-3">
+                                <div class="row g-1 text-center">
+                                    ${readings.map(r => `
+                                        <div class="col-6">
+                                            <div class="var-box status-neutral" style="padding: 4px 2px;">
+                                                <span style="font-size:0.55rem; white-space:nowrap; overflow:hidden;">${r.name}</span>
+                                                <strong style="font-size:0.75rem;">${r.value} <small>${r.unit}</small></strong>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        extraInfo = `
+                            <div class="variables-grid mt-2 mb-3">
+                                <div class="row g-2 text-center">
+                                    <div class="col-12">
+                                        <div class="var-box status-good">
+                                            <span>Coordenadas</span>
+                                            <strong>${station.coords[0]}, ${station.coords[1]}</strong>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
             }
 

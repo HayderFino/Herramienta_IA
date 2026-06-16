@@ -926,6 +926,11 @@
                     <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander
                     </option>
                   </optgroup>
+                  <optgroup label="Hidrológica (IDEAM)">
+                    <option value="PIRMA-3 HATO">PIRMA-3 HATO</option>
+                    <option value="PIRMA-2 ENCINO">PIRMA-2 ENCINO</option>
+                    <option value="PIRMA-1 CURITI">PIRMA-1 CURITI</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -999,6 +1004,11 @@
                     <option value="CAS-SUB Estacion Bomberos">CAS-SUB Estacion Bomberos</option>
                     <option value="CAS Universidad Industrial de Santander">CAS Universidad Industrial de Santander
                     </option>
+                  </optgroup>
+                  <optgroup label="Hidrológica (IDEAM)">
+                    <option value="PIRMA-3 HATO">PIRMA-3 HATO</option>
+                    <option value="PIRMA-2 ENCINO">PIRMA-2 ENCINO</option>
+                    <option value="PIRMA-1 CURITI">PIRMA-1 CURITI</option>
                   </optgroup>
                 </select>
               </div>
@@ -1387,7 +1397,7 @@
       const unitSpan = document.getElementById('manual-unit');
       let currentUnit = '';
       if (groupLabel === 'Calidad de Aire') currentUnit = 'µg/m³';
-      else if (groupLabel === 'Hidrológica (Clima)') currentUnit = '°C';
+      else if (groupLabel.includes('Hidro')) currentUnit = 'm';
       else if (groupLabel === 'Calidad de Agua') currentUnit = 'pH';
       unitSpan.innerText = currentUnit;
 
@@ -1472,23 +1482,40 @@
       reader.readAsText(file);
     }
 
-    function parseFlatFile(text) {
-      // 1. Limpiar líneas y filtrar vacías
-      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-      if (lines.length < 2) return;
+    const HIDRO_VAR_MAP = {
+      "1": { name: "Vbatt", unit: "V" },
+      "2": { name: "IbattM", unit: "A" },
+      "3": { name: "Nivel Hidrométrico", unit: "m" },
+      "4": { name: "Calidad Medida", unit: "dB" },
+      "5": { name: "Estado Medida", unit: "" },
+      "6": { name: "Lluvia Acumulada", unit: "mm" },
+      "7": { name: "Lluvia 10min", unit: "mm" },
+      "8": { name: "Nivel Máx 1h", unit: "m" },
+      "9": { name: "Nivel Mín 1h", unit: "m" }
+    };
 
-      // 2. Detectar separador
+    function parseFlatFile(text) {
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 1) return;
+
+      // 1. Detectar si es el formato de Hidrológicas (Timestamp;ID;Valor;Unidad;Calidad)
+      const firstLine = lines[0].split(';');
+      if (firstLine.length >= 4 && !isNaN(parseInt(firstLine[1]))) {
+        console.log("🔍 Detectado formato Hidrológica (Semicolon separated with IDs)");
+        parseHidroFile(lines);
+        return;
+      }
+
+      // 2. Limpiar nombres de columnas para Aire
+      const slug = (s) => s.replace(/"/g, '').replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+      // 3. Detectar separador para Aire
       const sample = lines.slice(0, 5).join('\n');
       let sep = '\t';
       if (sample.includes(';')) sep = ';';
       else if (sample.includes(',')) sep = ',';
 
-      console.log("🔍 Separador:", sep === '\t' ? 'TAB' : sep);
-
-      // 3. Limpiar nombres de columnas
-      const slug = (s) => s.replace(/"/g, '').replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
-
-      // 4. Encontrar fila de cabeceras (la que tenga más coincidencias de palabras clave)
+      // 4. Encontrar fila de cabeceras
       let headerIdx = -1;
       let maxMatches = 0;
       const keywords = ['pm10', 'pm2', 'temp', 'hum', 'hora', 'fecha', 'vel'];
@@ -1496,15 +1523,9 @@
       for (let i = 0; i < Math.min(lines.length, 15); i++) {
         const row = lines[i].toLowerCase();
         let matches = 0;
-        // Evitamos falsos positivos como "perfil horario"
         if (row.includes('perfil') && i < 2) continue;
-
         keywords.forEach(k => { if (row.includes(k)) matches++; });
-
-        if (matches > maxMatches) {
-          maxMatches = matches;
-          headerIdx = i;
-        }
+        if (matches > maxMatches) { maxMatches = matches; headerIdx = i; }
       }
       if (headerIdx === -1) headerIdx = 0;
 
@@ -1512,26 +1533,18 @@
       const header = rawHeader.map(slug);
       const colCount = header.length;
 
-      // 5. Encontrar la ÚLTIMA línea que parezca tener datos reales
+      // 5. Encontrar la ÚLTIMA línea de datos
       let lastDataLine = null;
       for (let i = lines.length - 1; i > headerIdx; i--) {
         const cells = lines[i].split(sep).map(s => s.replace(/"/g, '').trim().replace(',', '.'));
-        // Si tiene el mismo número de columnas y al menos una celda es numérica
         if (cells.length >= colCount - 1 && cells.some(c => !isNaN(parseFloat(c)))) {
           lastDataLine = cells;
           break;
         }
       }
 
-      if (!lastDataLine) {
-        console.error("❌ No se encontró una línea de datos válida.");
-        return;
-      }
+      if (!lastDataLine) return alert("No se encontró una línea de datos válida.");
 
-      console.log("📊 Cabeceras:", header);
-      console.log("📦 Datos:", lastDataLine);
-
-      // 6. Mapeo ultra-flexible
       const get = (keys) => {
         for (let key of keys) {
           const target = slug(key);
@@ -1542,6 +1555,7 @@
       };
 
       const data = {
+        type: 'aire',
         pm2_5: get(['pm25', 'pm2.5', 'altpm5']),
         pm10: get(['pm10']),
         tem: get(['temp', 'temperatura', 'auxt', 't']),
@@ -1553,27 +1567,86 @@
       renderUploadPreview(data);
     }
 
+    function parseHidroFile(lines) {
+      const latestValues = {};
+      lines.forEach(line => {
+        const parts = line.split(';');
+        if (parts.length < 4) return;
+        const id = parts[1].trim();
+        const valueStr = parts[2].trim().replace(',', '.');
+        const value = parseFloat(valueStr);
+        if (isNaN(value)) return;
+        
+        // EXCLUIR Vbatt (1) e IbattM (2) por solicitud del usuario
+        if (id === "1" || id === "2") return;
+
+        latestValues[id] = {
+          id: id,
+          value: value,
+          unit: parts[3].trim(),
+          quality: parts[4] ? parts[4].trim() : 'Good',
+          name: HIDRO_VAR_MAP[id] ? HIDRO_VAR_MAP[id].name : `ID ${id}`,
+          timestamp: parts[0].trim()
+        };
+      });
+
+      if (Object.keys(latestValues).length === 0) {
+        return alert("No se encontraron datos hidrológicos válidos (ID 3+).");
+      }
+
+      LAST_PARSED_DATA = {
+        type: 'hidro',
+        readings: latestValues
+      };
+      renderUploadPreview(LAST_PARSED_DATA);
+    }
+
     function renderUploadPreview(data) {
       const preview = document.getElementById('upload-preview');
       const container = document.getElementById('preview-data');
       preview.classList.remove('d-none');
 
-      const items = [
-        { label: 'PM2.5', value: data.pm2_5, unit: 'µg/m³' },
-        { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
-        { label: 'Temperatura', value: data.tem, unit: '°C' },
-        { label: 'Humedad', value: data.hum, unit: '%' },
-        { label: 'Velocidad', value: data.vel, unit: 'm/s' }
-      ];
-
-      container.innerHTML = items.map(it => `
-            <div class="col-4 mb-2">
-                <div class="p-2 border rounded text-center" style="background:rgba(255,255,255,0.05); border-color:var(--border-glow) !important;">
-                    <div class="text-muted" style="font-size:0.6rem;">${it.label}</div>
-                    <div class="fw-bold text-accent">${it.value || '--'} <small>${it.unit}</small></div>
-                </div>
+      if (data.type === 'aire') {
+        const items = [
+          { label: 'PM2.5', value: data.pm2_5, unit: 'µg/m³' },
+          { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
+          { label: 'Temperatura', value: data.tem, unit: '°C' },
+          { label: 'Humedad', value: data.hum, unit: '%' },
+          { label: 'Velocidad', value: data.vel, unit: 'm/s' }
+        ];
+        container.innerHTML = items.map(it => `
+          <div class="col-4 mb-2">
+            <div class="p-2 border rounded text-center" style="background:rgba(255,255,255,0.05); border-color:var(--border-glow) !important;">
+              <div class="text-muted" style="font-size:0.6rem;">${it.label}</div>
+              <div class="fw-bold text-accent">${it.value || '--'} <small>${it.unit}</small></div>
             </div>
+          </div>
         `).join('');
+      } else if (data.type === 'hidro') {
+        const readings = Object.values(data.readings);
+        container.innerHTML = `
+          <div class="col-12">
+            <table class="table table-sm table-dark table-borderless small mb-0" style="background:transparent;">
+              <thead>
+                <tr class="text-muted" style="font-size:0.65rem; border-bottom:1px solid rgba(255,255,255,0.1);">
+                  <th>Lectura</th>
+                  <th class="text-end">Valor</th>
+                  <th class="text-center">Calidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${readings.map(r => `
+                  <tr>
+                    <td>${r.name}</td>
+                    <td class="text-end fw-bold text-accent">${r.value} ${r.unit}</td>
+                    <td class="text-center"><span class="badge ${r.quality === 'Good' ? 'bg-success' : 'bg-warning'}" style="font-size:0.5rem;">${r.quality}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
     }
 
     function applyUploadedData() {
@@ -1593,6 +1666,16 @@
         const nVal = parseFloat(val);
         if (nVal > 35) status = 'Alerta';
         else if (nVal > 12) status = 'Precaución';
+      } else if (groupLabel.includes('Hidro')) {
+        // Para Hidrológicas, el indicador principal es el Nivel (ID 3)
+        const nivel = LAST_PARSED_DATA.readings && LAST_PARSED_DATA.readings["3"];
+        if (nivel) {
+          indicator = `${nivel.value} ${nivel.unit}`;
+          if (nivel.value > 2.0) status = 'Alerta'; // Ejemplo
+          else if (nivel.value > 1.8) status = 'Precaución';
+        } else {
+          indicator = 'Activa';
+        }
       } else {
         const val = LAST_PARSED_DATA.tem || '0';
         indicator = `${val} °C`;
