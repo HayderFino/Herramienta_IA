@@ -163,7 +163,8 @@ def _update_pm25_history(pm25_val: float):
 
     history.append({
         "timestamp": datetime.now().strftime("%H:%M"),
-        "value": round(float(pm25_val), 2)
+        "value": round(float(pm25_val), 2),
+        "station": "General"
     })
 
     try:

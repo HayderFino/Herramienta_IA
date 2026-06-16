@@ -1250,6 +1250,26 @@
       } catch (e) { console.error("Error saving manual data to server:", e); }
     }
 
+    // ─── GUARDAR PM2.5 EN HISTORIAL ───────────────────────────────────────────
+    async function savePm25ToHistory(stationName, pm25Value) {
+      if (!pm25Value || isNaN(parseFloat(pm25Value))) return;
+      try {
+        const now = new Date();
+        const timestamp = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+          + ' ' + now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit' });
+        await fetch('../api.php?route=pm25_history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            timestamp: timestamp,
+            value: parseFloat(pm25Value),
+            station: stationName
+          })
+        });
+        console.log(`📊 PM2.5 history saved: ${stationName} = ${pm25Value}`);
+      } catch (e) { console.error('Error saving PM2.5 history:', e); }
+    }
+
     async function loadManualDataFromServer() {
       try {
         const r = await fetch('../api.php?route=manual_data&t=' + Date.now());
@@ -1352,13 +1372,15 @@
 
       let indicator = rawVal ? `${rawVal} ${unit}`.trim() : '';
 
+      const pm25Val = document.getElementById('manual-pm2_5').value;
+
       let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
       manualData[station] = {
         indicator,
         status,
         timestamp: new Date().toISOString(),
         allData: {
-          pm2_5: document.getElementById('manual-pm2_5').value,
+          pm2_5: pm25Val,
           tem: document.getElementById('manual-tem').value,
           hum: document.getElementById('manual-hum').value,
           vel: document.getElementById('manual-vel').value
@@ -1366,6 +1388,9 @@
       };
       localStorage.setItem('manualStationData', JSON.stringify(manualData));
       syncManualDataToServer();
+
+      // Guardar en historial PM2.5 para el gráfico acumulado
+      savePm25ToHistory(station, pm25Val);
 
       const msg = document.getElementById('manual-msg');
       msg.innerHTML = `<span class="badge bg-success" style="padding:8px"><i class="fas fa-check me-2"></i>Datos inyectados a ${station}</span>`;
@@ -1694,6 +1719,12 @@
 
       localStorage.setItem('manualStationData', JSON.stringify(manualData));
       syncManualDataToServer();
+
+      // Guardar en historial PM2.5 para el gráfico acumulado
+      const pm25FromUpload = LAST_PARSED_DATA.pm2_5 || (LAST_PARSED_DATA.allData && LAST_PARSED_DATA.allData.pm2_5);
+      if (pm25FromUpload) {
+        savePm25ToHistory(station, pm25FromUpload);
+      }
 
       msg.innerHTML = `<span class="badge bg-success" style="padding:10px"><i class="fas fa-check-circle me-2"></i>Archivo procesado. Datos inyectados a ${station}</span>`;
       document.getElementById('upload-preview').classList.add('d-none');
