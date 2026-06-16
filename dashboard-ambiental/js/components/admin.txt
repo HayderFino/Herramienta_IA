@@ -1,5 +1,4 @@
-con privilegios 
-http://localhost/CAS/solucion-monitoreo/herrameinta_IA/dashboard-ambiental/index.html?admin=1245
+/index.html?admin=1245
 
 
 
