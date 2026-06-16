@@ -13,7 +13,6 @@ import { cumulativePanel } from './components/cumulativePanel.js?v=20260425';
 
 class App {
     async init() {
-        console.log('🚀 Initializing Dashboard...');
         
         // 1. Initialize Components
         mapComponent.init();
@@ -44,12 +43,10 @@ class App {
             // Lógica: Solo se muestra si es Admin Y la opción está activada en la config.
             // Por defecto (si no es admin o no está activado), se oculta.
             if (isAdmin && config.showPredictiveModel === true) {
-                console.log('Admin detectado: Mostrando modelo predictivo lateral.');
                 colSide.classList.remove('d-none');
                 colMain.classList.remove('col-lg-12');
                 colMain.classList.add('col-lg-8');
             } else {
-                console.log('Ocultando modelo predictivo lateral (No admin o desactivado).');
                 colSide.classList.add('d-none');
                 colMain.classList.remove('col-lg-8');
                 colMain.classList.add('col-lg-12');
@@ -72,7 +69,6 @@ class App {
         const hdTipoCons = document.getElementById('hdTipoCons');
 
         if (isAdminSession) {
-            console.log('Admin Session Activated');
             if (adminBtn) adminBtn.classList.remove('d-none');
             if (hdTipoCons) hdTipoCons.value = "Administrador";
         } else {
@@ -83,7 +79,6 @@ class App {
 
     async refreshData() {
         try {
-            console.log('Refreshing data...');
             // In parallel for speed
             const [weather, airQuality, prediction] = await Promise.all([
                 weatherService.getCurrentWeather(),
@@ -98,9 +93,8 @@ class App {
             recommendationPanel.render(weather, airQuality);
             cumulativePanel.update();
 
-            console.log('✅ Dashboard updated successfully.');
         } catch (error) {
-            console.error('❌ Error updating dashboard:', error);
+            // Error silencioso en producción
         }
     }
 
@@ -127,14 +121,12 @@ class App {
         if (mapStyleSelect) {
             mapStyleSelect.addEventListener('change', (e) => {
                 const style = e.target.value;
-                console.log(`💡 Main App: Solicitando estilo mapa -> ${style}`);
                 mapComponent.changeStyle(style);
             });
         }
 
         // Listen to storage changes (for admin panel config)
         window.addEventListener('storage', () => {
-            console.log('🔄 Dashboard: Detectado cambio en localStorage, aplicando config...');
             this.applyDashboardConfig();
             cumulativePanel.update();
             this.refreshData(); // Refresh metrics just in case
@@ -147,7 +139,6 @@ class App {
         const adminBtn = document.getElementById('admin-btn');
         if (adminBtn) {
             adminBtn.addEventListener('click', () => {
-                console.log('🔑 Setting admin access handshake...');
                 sessionStorage.setItem('admin_access_handshake', 'true');
             });
         }

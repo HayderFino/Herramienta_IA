@@ -15,8 +15,7 @@ class PredictionService {
             const response = await fetch(this.apiUrl);
             if (!response.ok) throw new Error('API unstable');
             return await response.json();
-        } catch (error) {
-            console.warn('Real ML API not available, falling back to minimal local view.');
+        } catch {
             return {
                 labels: ['Ahora', '+1h', '+2h', '+3h', '+4h', '+5h'],
                 data: [0, 0, 0, 0, 0, 0],
@@ -42,8 +41,7 @@ class PredictionService {
             });
             if (!response.ok) throw new Error('Error al subir archivo');
             return await response.json();
-        } catch (error) {
-            console.error('ML Analysis service is DOWN:', error);
+        } catch {
             return {
                 success: false,
                 message: "Servicio de análisis IA no activo. Ejecuta api_bridge.py primero.",

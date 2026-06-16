@@ -375,6 +375,43 @@ body {
     margin-left: 5px;
 }
 
+/* ── Cumulative Chart (PM2.5 por Estación) ──────────────────────────── */
+.chart-container {
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 4px 0;
+}
+
+/* Leyenda de umbrales debajo del gráfico */
+.chart-thresholds-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0 2px;
+    font-size: 0.78rem;
+    font-family: 'Outfit', sans-serif;
+    color: #64748B;
+}
+
+.chart-thresholds-legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.chart-thresholds-legend .dot {
+    width: 10px;
+    height: 3px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+/* Estado vacío del gráfico */
+.chart-empty-msg {
+    font-family: 'Outfit', sans-serif;
+}
+
 /* Variables Grid in Cards */
 .variables-grid {
     border-top: 1px solid rgba(0,0,0,0.05);

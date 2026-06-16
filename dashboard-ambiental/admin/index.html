@@ -1088,8 +1088,7 @@
         if (!r.ok) throw new Error("No se pudo cargar el archivo");
         CREDENTIALS = await r.json();
         renderCredentials();
-      } catch (e) {
-        console.warn("Usando credenciales por defecto", e);
+      } catch {
         CREDENTIALS = { users: [{ username: 'Admin', password: '1234', role: 'administrator', created: '2026-04-13' }] };
         renderCredentials();
       }
@@ -1247,27 +1246,34 @@
           headers: { 'Content-Type': 'application/json' },
           body: data
         });
-      } catch (e) { console.error("Error saving manual data to server:", e); }
+      } catch { /* Error silencioso en prod */ }
     }
 
     // ─── GUARDAR PM2.5 EN HISTORIAL ───────────────────────────────────────────
+    // Genera timestamp DD/MM HH:MM (consistente para ordenamiento cronológico)
+    function _historyTimestamp() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      return `${dd}/${mm} ${hh}:${min}`;
+    }
+
     async function savePm25ToHistory(stationName, pm25Value) {
-      if (!pm25Value || isNaN(parseFloat(pm25Value))) return;
+      const val = parseFloat(pm25Value);
+      if (!pm25Value || isNaN(val)) return;
       try {
-        const now = new Date();
-        const timestamp = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
-          + ' ' + now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit' });
         await fetch('../api.php?route=pm25_history', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            timestamp: timestamp,
-            value: parseFloat(pm25Value),
+            timestamp: _historyTimestamp(),
+            value: val,
             station: stationName
           })
         });
-        console.log(`📊 PM2.5 history saved: ${stationName} = ${pm25Value}`);
-      } catch (e) { console.error('Error saving PM2.5 history:', e); }
+      } catch { /* Error silencioso en prod */ }
     }
 
     async function loadManualDataFromServer() {
@@ -1279,7 +1285,7 @@
           const ev = new Event('change');
           document.getElementById('manual-station').dispatchEvent(ev);
         }
-      } catch (e) { console.warn("Could not load manual data from server", e); }
+      } catch { /* Error silencioso en prod */ }
     }
 
     // Load initially
@@ -1310,8 +1316,7 @@
           // Trigger storage event for the dashboard tab
           localStorage.setItem('weather_updated', Date.now());
         }
-      } catch (e) {
-        console.error("Error saving manual weather:", e);
+      } catch {
         alert('❌ Error al guardar los datos.');
       }
     }
@@ -1344,7 +1349,7 @@
             document.getElementById('weather-status-info').style.display = 'none';
           }
         }
-      } catch (e) { console.warn("Could not load manual weather from server", e); }
+      } catch { /* Error silencioso en prod */ }
     }
 
     async function resetWeatherToAPI() {
@@ -1359,8 +1364,7 @@
         document.getElementById('weather-manual-form').reset();
         alert('✅ Datos restablecidos. El Dashboard volverá a usar el API.');
         localStorage.setItem('weather_updated', Date.now());
-      } catch (e) {
-        console.error("Error resetting weather:", e);
+      } catch {
       }
     }
 
@@ -1369,10 +1373,21 @@
       const rawVal = document.getElementById('manual-indicator').value.trim();
       const unit = document.getElementById('manual-unit').innerText;
       const status = document.getElementById('manual-status').value;
+      const groupLabel = document.getElementById('manual-station').options[
+        document.getElementById('manual-station').selectedIndex
+      ].parentNode.label;
 
       let indicator = rawVal ? `${rawVal} ${unit}`.trim() : '';
 
-      const pm25Val = document.getElementById('manual-pm2_5').value;
+      // Campo PM2.5 del bloque de variables detalladas
+      const pm25DetailVal = document.getElementById('manual-pm2_5').value.trim();
+
+      // Si la estación es de Calidad de Aire, el valor principal (rawVal) ES el PM2.5.
+      // Preferir el campo detallado; si está vacío, usar el indicador principal.
+      let pm25ToSave = pm25DetailVal;
+      if (!pm25ToSave && groupLabel === 'Calidad de Aire' && rawVal) {
+        pm25ToSave = rawVal;
+      }
 
       let manualData = JSON.parse(localStorage.getItem('manualStationData') || '{}');
       manualData[station] = {
@@ -1380,7 +1395,7 @@
         status,
         timestamp: new Date().toISOString(),
         allData: {
-          pm2_5: pm25Val,
+          pm2_5: pm25DetailVal || rawVal,   // guardar el valor aunque sea el principal
           tem: document.getElementById('manual-tem').value,
           hum: document.getElementById('manual-hum').value,
           vel: document.getElementById('manual-vel').value
@@ -1389,8 +1404,8 @@
       localStorage.setItem('manualStationData', JSON.stringify(manualData));
       syncManualDataToServer();
 
-      // Guardar en historial PM2.5 para el gráfico acumulado
-      savePm25ToHistory(station, pm25Val);
+      // ── Guardar automáticamente en historial PM2.5 ──
+      savePm25ToHistory(station, pm25ToSave);
 
       const msg = document.getElementById('manual-msg');
       msg.innerHTML = `<span class="badge bg-success" style="padding:8px"><i class="fas fa-check me-2"></i>Datos inyectados a ${station}</span>`;
@@ -1496,7 +1511,6 @@
     }
 
     function handleUploadedFile(file) {
-      console.log("📂 File detected:", file.name);
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target.result;
@@ -1526,7 +1540,6 @@
       // 1. Detectar si es el formato de Hidrológicas (Timestamp;ID;Valor;Unidad;Calidad)
       const firstLine = lines[0].split(';');
       if (firstLine.length >= 4 && !isNaN(parseInt(firstLine[1]))) {
-        console.log("🔍 Detectado formato Hidrológica (Semicolon separated with IDs)");
         parseHidroFile(lines);
         return;
       }

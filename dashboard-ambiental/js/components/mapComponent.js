@@ -36,7 +36,6 @@ class MapComponent {
     }
 
     init() {
-        console.log('Initializing MapComponent...');
 
         // 1. Crear el mapa Leaflet
         this.map = L.map('map', {
@@ -69,7 +68,6 @@ class MapComponent {
         // 6. Escuchar cambios del admin panel en tiempo real
         window.addEventListener('storage', (e) => {
             if (e.key === 'manualStationData') {
-                console.log("Detectado cambio en datos manuales, regenerando marcadores...");
                 Object.values(this.layers).forEach(layer => layer.clearLayers());
                 this._buildStationLayers();
                 this._renderCards();
@@ -286,8 +284,6 @@ class MapComponent {
                 marker.addTo(this.layers[category]);
             });
         });
-
-        console.log('Station layers built successfully.');
     }
 
     /** Ajusta el zoom/paneo para mostrar todas las estaciones de la capa indicada */
@@ -355,14 +351,8 @@ class MapComponent {
             // Actualizar el badge de ubicación según la capa
             const mapStatus = document.getElementById('map-status');
             if (mapStatus) {
-                if (layerName === 'hidro') {
-                    mapStatus.textContent = 'Santander';
-                } else {
-                    mapStatus.textContent = 'Barrancabermeja';
-                }
+                mapStatus.textContent = layerName === 'hidro' ? 'Santander' : 'Barrancabermeja';
             }
-
-            console.log(`Layer switched to: ${layerName}`);
         }
     }
 
