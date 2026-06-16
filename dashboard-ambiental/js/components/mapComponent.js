@@ -351,6 +351,17 @@ class MapComponent {
             this._fitToLayer(layerName);
             this._renderCards();
             this._updateLegend(layerName);
+
+            // Actualizar el badge de ubicación según la capa
+            const mapStatus = document.getElementById('map-status');
+            if (mapStatus) {
+                if (layerName === 'hidro') {
+                    mapStatus.textContent = 'Santander';
+                } else {
+                    mapStatus.textContent = 'Barrancabermeja';
+                }
+            }
+
             console.log(`Layer switched to: ${layerName}`);
         }
     }
